@@ -2,7 +2,7 @@
     <div style="line-height: 60px; display: flex">
         <div style="flex: 1;font-size: 20px">
             <span :class="collapseBtnClass" style="cursor: pointer" @click="collapse"></span>
-            <span style="font-size: 18px;margin-left: 15px;">当前时间：{{ nowDate }}</span>
+            <span class="timeShow" style="font-size: 18px;margin-left: 15px;">当前时间：{{ nowDate }}</span>
         </div>
         <template>
             <div id="full-screen" style="margin-right: 20px;cursor:pointer;">
@@ -86,4 +86,13 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+@media screen and (max-width:600px) {
+    .timeShow{
+        display: none;
+    }
+    #full-screen{
+        display: none;
+    }
+}
+</style>

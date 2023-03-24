@@ -21,4 +21,15 @@
   border-radius: 3px;
   background: rgba(255, 255, 255, 1);
 }
+/* 组件适配—Message 消息提示 */
+@media screen and (max-width: 600px) {
+    .el-message {
+      min-width: 300px !important;
+    }
+}
+@media screen and (max-width: 500px) {
+  .el-message-box {
+    width: 300px !important;
+  }
+}
 </style>

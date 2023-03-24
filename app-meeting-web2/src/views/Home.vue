@@ -83,7 +83,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .el-calendar-table .el-calendar-day{
   height: 65px;
 }
@@ -108,6 +108,28 @@ export default {
 .met {
   color: red;
   padding-left: 10px;
+}
+/*响应移动端*/
+@media (max-width: 830px) {
+  /* .el-calendar {
+    width: 490px !important;
+    padding: 0px;
+  } */
+
+  .el-calendar-day {
+    height: 85px !important;
+  }
+}
+@media (max-width: 500px) {
+  .el-calendar {
+    width: 100% !important;
+    padding: 0px;
+    font-size: 12px !important;
+  }
+/* 
+  .el-calendar-day {
+    height: 100px !important;
+  } */
 }
 
 </style>

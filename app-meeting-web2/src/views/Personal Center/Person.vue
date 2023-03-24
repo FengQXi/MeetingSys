@@ -356,7 +356,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .avatar-uploader {
   text-align: center;
   margin-top: -30px;

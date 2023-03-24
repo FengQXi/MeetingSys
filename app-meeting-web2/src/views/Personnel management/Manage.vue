@@ -39,15 +39,16 @@
     </el-table>
 
     <!--  分页  -->
-    <div style="padding-left: 400px;padding-top: 15px">
+    <div style="padding-top: 15px">
       <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="pageNum"
-          :page-sizes="[5,10,15,20]"
-          :page-size="pageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total">
+        align="center"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="pageNum"
+        :page-sizes="[5,10,15,20]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total">
       </el-pagination>
     </div>
 
@@ -233,7 +234,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .headerBg {
   background: #eee !important;
 }

@@ -8,59 +8,49 @@
       <el-breadcrumb-item>预定会议</el-breadcrumb-item>
     </el-breadcrumb>
 
-    <el-form :model="form" ref="form" :rules="rules" label-width="450px">
-      <el-form-item label="会议名称" prop="meetingname">
-        <el-input v-model="form.meetingname" style="width: 220px;"></el-input>
-      </el-form-item>
-      <el-form-item label="预计人数" prop="numberofparticipants">
-        <el-input v-model="form.numberofparticipants" style="width: 220px;" disabled></el-input>
-      </el-form-item>
-      <el-form-item label="会议开始签到时间" prop="signinstarttime">
-        <el-date-picker
-            v-model="form.signinstarttime"
-            type="datetime"
-            placeholder="选择会议开始日期"
+    <el-card class="box-card">
+      <el-form :model="form" ref="form" :rules="rules" label-width="110px">
+        <el-form-item label="会议名称" prop="meetingname">
+          <el-input v-model="form.meetingname" style="width: 220px;"></el-input>
+        </el-form-item>
+        <el-form-item label="预计人数" prop="numberofparticipants">
+          <el-input v-model="form.numberofparticipants" style="width: 220px;" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="开始签到时间" prop="signinstarttime">
+          <el-date-picker v-model="form.signinstarttime" type="datetime" placeholder="选择会议开始日期"
             value-format="yyyy-MM-dd HH:mm:ss">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="会议签到结束时间" prop="signinendtime">
-        <el-date-picker
-            v-model="form.signinendtime"
-            type="datetime"
-            placeholder="选择会议开始日期"
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="签到结束时间" prop="signinendtime">
+          <el-date-picker v-model="form.signinendtime" type="datetime" placeholder="选择会议开始日期"
             value-format="yyyy-MM-dd HH:mm:ss">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="会议开始时间" prop="starttime">
-        <el-date-picker
-            v-model="form.starttime"
-            type="datetime"
-            placeholder="选择会议开始日期"
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="会议开始时间" prop="starttime">
+          <el-date-picker v-model="form.starttime" type="datetime" placeholder="选择会议开始日期"
             value-format="yyyy-MM-dd HH:mm:ss">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="会议结束时间" prop="endtime">
-        <el-date-picker
-            v-model="form.endtime"
-            type="datetime"
-            placeholder="选择会议结束日期"
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="会议结束时间" prop="endtime">
+          <el-date-picker v-model="form.endtime" type="datetime" placeholder="选择会议结束日期"
             value-format="yyyy-MM-dd HH:mm:ss">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="会议室名称" prop="roomid">
-        <el-select v-model="form.roomid" placeholder="请选择会议室" @change="onInstitutionChange">
-          <el-option v-for="meeting in meeting" :key="meeting.roomid" :label="meeting.roomname"
-                     :value="meeting.roomid"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="会议说明" prop="description">
-        <el-input type="textarea" v-model="form.description" style="width: 350px;"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit('form')" class="btn">预定会议</el-button>
-        <el-button type="danger" @click="reset('form')" class="btn">重置</el-button>
-      </el-form-item>
-    </el-form>
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="会议室名称" prop="roomid">
+          <el-select v-model="form.roomid" placeholder="请选择会议室" @change="onInstitutionChange">
+            <el-option v-for="meeting in meeting" :key="meeting.roomid" :label="meeting.roomname"
+              :value="meeting.roomid"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="会议说明" prop="description">
+          <el-input type="textarea" v-model="form.description" style="width: 220px;"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="onSubmit('form')" class="btn">预定会议</el-button>
+          <el-button type="danger" @click="reset('form')" class="btn">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
   </div>
 </template>
 
@@ -73,28 +63,28 @@ export default {
       form: {},
       rules: {
         meetingname: [
-          {required: true, message: '请输入会议名称', trigger: 'blur'}
+          { required: true, message: '请输入会议名称', trigger: 'blur' }
         ],
         numberofparticipants: [
-          {required: true, message: '请输入预计参会人数', trigger: 'blur'}
+          { required: true, message: '请输入预计参会人数', trigger: 'blur' }
         ],
         signinstarttime: [
-          {required: true, message: '请选择会议开始签到时间', trigger: 'blur'}
+          { required: true, message: '请选择会议开始签到时间', trigger: 'blur' }
         ],
         signinendtime: [
-          {required: true, message: '请选择会议签到结束时间', trigger: 'blur'}
+          { required: true, message: '请选择会议签到结束时间', trigger: 'blur' }
         ],
         starttime: [
-          {required: true, message: '请选择会议开始时间', trigger: 'blur'}
+          { required: true, message: '请选择会议开始时间', trigger: 'blur' }
         ],
         endtime: [
-          {required: true, message: '请选择会议结束时间', trigger: 'blur'}
+          { required: true, message: '请选择会议结束时间', trigger: 'blur' }
         ],
         roomid: [
-          {required: true, message: '请选择会议室', trigger: 'blur'}
+          { required: true, message: '请选择会议室', trigger: 'blur' }
         ],
         description: [
-          {required: true, message: '请输入会议说明', trigger: 'blur'}
+          { required: true, message: '请输入会议说明', trigger: 'blur' }
         ]
       },
       employee: localStorage.getItem("employee") ? JSON.parse(localStorage.getItem("employee")) : {},
@@ -150,5 +140,40 @@ export default {
 </script>
 
 <style scoped>
+  .text {
+    font-size: 14px;
+  }
 
+  .item {
+    padding: 18px 0;
+  }
+  .box-card {
+    width: 480px;
+    margin: auto;
+  }
+
+  @media (max-width: 600px) {
+    /* 卡片大小 */
+    .box-card {
+      width: 100%;
+      margin: auto;
+      font-size: 10px;
+    }
+    /* 输入框大小 */
+    .el-input{
+      width: 200px !important;
+    }
+    /* 文本输入域大小 */
+    .el-textarea{
+      width: 200px !important;
+    }
+    /* 时间选择器位置 */
+    .el-time-panel{
+      left: -20% !important;
+    }
+    /* 日期选择器位置 */
+    .el-picker-panel{
+      left: -10% !important;
+    }
+  }
 </style>

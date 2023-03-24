@@ -9,58 +9,61 @@
     </el-breadcrumb>
 
     <!--  搜索框、搜索按钮、重置按钮  -->
-    <div style="padding: 10px 0">
-      <el-input style="width:250px" suffix-icon="el-icon-search" placeholder="请输入会议名称" v-model="meetingname" clearable></el-input>
+    <div style="padding: 10px 0" class="CancelInput">
+      <el-input style="width:250px" suffix-icon="el-icon-search" placeholder="请输入会议名称" v-model="meetingname"
+        clearable></el-input>
       <el-button style="margin-left: 3px" type="primary" @click="load">搜索</el-button>
       <el-button style="margin-left: 3px" type="warning" @click="reset">重置</el-button>
     </div>
 
     <!--  主体数据表格  -->
     <el-table :data="tableData" v-loading="loading" border stripe :header-cell-class-name="headerBg">
-      <el-table-column prop="meetingname" label="会议名称" width="100px"></el-table-column>
-      <el-table-column prop="roomname" label="会议室名称"></el-table-column>
-      <el-table-column prop="signinstarttime" label="会议开始签到时间" sortable></el-table-column>
-      <el-table-column prop="signinendtime" label="会议结束签到时间" sortable></el-table-column>
-      <el-table-column prop="starttime" label="会议开始时间" sortable></el-table-column>
-      <el-table-column prop="endtime" label="会议结束时间" sortable></el-table-column>
-      <el-table-column prop="canceledtime" label="取消会议时间"></el-table-column>
-      <el-table-column prop="canceledreason" label="取消会议原因"></el-table-column>
-      <el-table-column
-          fixed="right"
-          label="操作"
-          width="200">
+      <el-table-column prop="roomname" label="会议室名称" width="100px"></el-table-column>
+      <el-table-column prop="signinstarttime" label="签到开始时间" min-width="140px" sortable></el-table-column>
+      <el-table-column prop="signinendtime" label="签到结束时间" min-width="140px" sortable></el-table-column>
+      <el-table-column prop="starttime" label="会议开始时间" min-width="140px" sortable></el-table-column>
+      <el-table-column prop="endtime" label="会议结束时间" min-width="140px" sortable></el-table-column>
+      <el-table-column prop="canceledtime" label="取消会议时间" min-width="140px"></el-table-column>
+      <el-table-column prop="canceledreason" label="取消会议原因" min-width="140px"></el-table-column>
+      <el-table-column label="操作" width="200">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" @click="meetingLook(scope.row.meetingid)">查看详情<i class="el-icon-s-promotion"></i></el-button>
-          <el-button type="danger" size="small" @click="handleDelete(scope.row.meetingid)">删除<i class="el-icon-delete"></i></el-button>
+          <el-button type="primary" size="small" @click="meetingLook(scope.row.meetingid)">查看详情<i
+              class="el-icon-s-promotion"></i></el-button>
+          <el-button type="danger" size="small" @click="handleDelete(scope.row.meetingid)">删除<i
+              class="el-icon-delete"></i></el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <!--  分页  -->
-    <div style="padding-left: 400px;padding-top: 15px">
-      <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="pageNum"
-          :page-sizes="[5,10,15,20]"
-          :page-size="pageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total">
+    <div style="padding-top: 15px" class="paginationShow">
+      <el-pagination align="center" @size-change="handleSizeChange" @current-change="handleCurrentChange"
+        :current-page="pageNum" :page-sizes="[5, 10, 15, 20]" :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
 
     <!--查看会议详情-->
-    <el-dialog title="会议信息" :visible.sync="dialogFormVisible" width="40%">
-      <el-descriptions :model="form" :column="2">
-        <el-descriptions-item label="会议名称">{{form.meetingname}}</el-descriptions-item>
-        <el-descriptions-item label="预计参加会议的人数">{{form.numberofparticipants}}</el-descriptions-item>
-        <el-descriptions-item label="会议预定时间">{{form.reservationtime}}</el-descriptions-item>
-        <el-descriptions-item label="会议室房间号">{{form.roomnum}}</el-descriptions-item>
-        <el-descriptions-item label="会议室名称">{{form.roomname}}</el-descriptions-item>
-        <el-descriptions-item label="会议说明">{{form.description}}</el-descriptions-item>
+    <el-dialog title="会议信息" :visible.sync="dialogFormVisible" width="90%">
+      <el-descriptions class="margin-top" :column="columnWithWidth" :size="size" border>
+        <el-descriptions-item>
+          <template slot="label"><i class="el-icon-monitor"></i>&nbsp;会议名称</template>{{ form.meetingname }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label"><i class="el-icon-alarm-clock"></i>&nbsp;会议预定时间</template>{{ form.reservationtime }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label"><i class="el-icon-s-home"></i>&nbsp;会议室房间号</template>{{ form.roomnum }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label"><i class="el-icon-tickets"></i>&nbsp;会议室名称</template>
+          <el-tag size="small">{{ form.roomname }}</el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label"><i class="el-icon-postcard"></i>&nbsp;会议说明</template>{{ form.description }}
+        </el-descriptions-item>
       </el-descriptions>
     </el-dialog>
-
   </div>
 </template>
 
@@ -80,18 +83,27 @@ export default {
       pageNum: 1,
       pageSize: 5,
       meetingname: '',
-      loading: false
+      loading: false,
+      // srceenWidth: document.documentElement.clientWidth,
     }
   },
   //进入页面刷新数据
   created() {
     this.load()
   },
+  computed: {
+    columnWithWidth() {
+      if (document.documentElement.clientWidth <= 500)
+        return 1
+      else
+        return 2
+    }
+  },
   methods: {
     //请求分页查询数据
-    load(){
+    load() {
       this.loading = true
-      this.request.get("/notifications/cancelMeeting/" + this.employee.employeeid,{
+      this.request.get("/notifications/cancelMeeting/" + this.employee.employeeid, {
         params: {
           pageNum: this.pageNum,
           pageSize: this.pageSize,
@@ -121,7 +133,7 @@ export default {
     },
     //查看详情
     meetingLook(meetingid) {
-      this.request.post("/meeting/meetingById/" + meetingid, this.form).then(res=>{
+      this.request.post("/meeting/meetingById/" + meetingid, this.form).then(res => {
         console.log(res)
         this.dialogFormVisible = true
         this.form = res.data[0]
@@ -129,11 +141,11 @@ export default {
     },
     //根据ID删除
     handleDelete(meetingid) {
-      this.$confirm('确定删除此会议吗？','提示',{
+      this.$confirm('确定删除此会议吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(()=>{
+      }).then(() => {
         this.request.delete("/meeting/delete/" + meetingid).then(res => {
           if (res.code === 200) {
             this.$message({
@@ -157,9 +169,16 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .headerBg {
   background: #eee !important;
 }
-
+@media screen and (max-width: 500px) {
+  .CancelInput .el-input--small{
+    display: block;
+  }
+  .CancelInput .el-button{
+    margin-top: 10px;
+  }
+}
 </style>

@@ -9,21 +9,21 @@
     </el-breadcrumb>
 
     <!--  搜索框、搜索按钮、重置按钮  -->
-    <div style="padding: 10px 0">
+    <div style="padding: 10px 0" class="ScheduledInput">
       <el-input style="width:250px" suffix-icon="el-icon-search" placeholder="请输入会议名称" v-model="meetingname"
-                clearable></el-input>
+        clearable></el-input>
       <el-button style="margin-left: 3px" type="primary" @click="load">搜索</el-button>
       <el-button style="margin-left: 3px" type="warning" @click="reset">重置</el-button>
     </div>
 
     <!--  主体数据表格  -->
     <el-table :data="tableData" v-loading="loadingData" border stripe :header-cell-class-name="headerBg">
-      <el-table-column prop="meetingname" label="会议名称" width="110px"></el-table-column>
-      <el-table-column prop="roomname" label="会议室名称" width="130px"></el-table-column>
-      <el-table-column prop="starttime" label="会议开始时间" sortable></el-table-column>
-      <el-table-column prop="endtime" label="会议结束时间" sortable></el-table-column>
-      <el-table-column prop="reservationtime" label="会议预定时间"></el-table-column>
-      <el-table-column fixed="right" label="操作" width="480">
+      <el-table-column prop="meetingname" label="会议名称" width="100px"></el-table-column>
+      <el-table-column prop="roomname" label="会议室名称" width="100px"></el-table-column>
+      <el-table-column prop="starttime" label="会议开始时间" min-width="140px" ortable></el-table-column>
+      <el-table-column prop="endtime" label="会议结束时间" min-width="140px" sortable></el-table-column>
+      <el-table-column prop="reservationtime" label="会议预定时间" min-width="140px"></el-table-column>
+      <el-table-column label="操作" align="center" width="480">
         <template slot-scope="scope">
           <el-button type="danger" size="small" @click="cancelmeeting(scope.row.meetingid)">撤销会议<i
               class="el-icon-circle-close"></i></el-button>
@@ -38,21 +38,22 @@
     </el-table>
 
     <!--  查看考勤信息的弹窗  -->
-    <el-dialog title="查看考勤信息" :visible.sync="dialogVisible" fullscreen center>
+    <el-dialog title="查看考勤信息" :visible.sync="dialogVisible" width="90%" center>
       <div style="margin-bottom: 10px">
-        参加会议总人数：{{totalNumber}} 人<el-divider direction="vertical"></el-divider>
-        已签到人数：{{totalNumber-signedNumber}} 人<el-divider direction="vertical"></el-divider>
-        未签到人数：{{signedNumber}} 人 <el-divider direction="vertical"></el-divider>
-        <el-button type="primary" @click="exp(meetingid)" style="margin-left: 10px">导出考勤信息<i class="el-icon-download"></i></el-button>
+        参加会议总人数：{{ totalNumber }} 人<el-divider direction="vertical"></el-divider>
+        已签到人数：{{ totalNumber - signedNumber }} 人<el-divider direction="vertical"></el-divider>
+        未签到人数：{{ signedNumber }} 人 <el-divider direction="vertical"></el-divider>
+        <el-button type="primary" @click="exp(meetingid)" class="downloadFile">导出考勤信息<i class="el-icon-download">
+          </i></el-button>
       </div>
       <el-table :data="employeeData" border stripe :header-cell-class-name="headerBg">
-        <el-table-column prop="employeename" label="员工姓名" width="100px"></el-table-column>
-        <el-table-column prop="phone" label="手机号" width="140px"></el-table-column>
-        <el-table-column prop="email" label="邮箱" width="170px"></el-table-column>
-        <el-table-column prop="departmentname" label="所属部门" width="100px"></el-table-column>
-        <el-table-column prop="checkintime" label="签到时间"></el-table-column>
-        <el-table-column prop="location" label="签到地点"></el-table-column>
-        <el-table-column prop="status" label="签到状态" width="100px">
+        <el-table-column prop="employeename" label="员工姓名" width="80px"></el-table-column>
+        <el-table-column prop="phone" label="手机号" min-width="100px"></el-table-column>
+        <el-table-column prop="email" label="邮箱" min-width="150px"></el-table-column>
+        <el-table-column prop="departmentname" label="所属部门" width="80px"></el-table-column>
+        <el-table-column prop="checkintime" label="签到时间" min-width="150px"></el-table-column>
+        <el-table-column prop="location" label="签到地点" min-width="120px"></el-table-column>
+        <el-table-column prop="status" label="签到状态" width="80px">
           <template slot-scope="scope">
             <el-tag size="small" v-if="scope.row.status === 0 && nowDate >= scope.row.signinendtime" type="danger">未签到
             </el-tag>
@@ -60,18 +61,18 @@
               签到未开始
             </el-tag>
             <el-tag size="small"
-                    v-if="scope.row.status === 0 && nowDate <= scope.row.signinendtime && nowDate >= scope.row.signinstarttime">
+              v-if="scope.row.status === 0 && nowDate <= scope.row.signinendtime && nowDate >= scope.row.signinstarttime">
               正在签到
             </el-tag>
             <el-tag size="small" v-else-if="scope.row.status === 1" type="success">已签到</el-tag>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作">
+        <el-table-column label="操作" min-width="170">
           <template slot-scope="scope">
-            <el-button type="success" size="small" @click="signature(scope.row.meetingid,scope.row.employeeid)"
-                       v-if="scope.row.status === 0 && nowDate >= scope.row.signinendtime">补签<i
+            <el-button type="success" size="small" @click="signature(scope.row.meetingid, scope.row.employeeid)"
+              v-if="scope.row.status === 0 && nowDate >= scope.row.signinendtime">补签<i
                 class="el-icon-check"></i></el-button>
-            <el-button type="danger" size="small" @click="DeleteEmp(scope.row.employeeid,scope.row.meetingid)">删除<i
+            <el-button type="danger" size="small" @click="DeleteEmp(scope.row.employeeid, scope.row.meetingid)">删除<i
                 class="el-icon-delete"></i></el-button>
           </template>
         </el-table-column>
@@ -79,25 +80,20 @@
     </el-dialog>
 
     <!--  分页  -->
-    <div style="padding-left: 400px;padding-top: 15px">
-      <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="pageNum"
-          :page-sizes="[5,10,15,20]"
-          :page-size="pageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total">
+    <div style="padding-top: 15px">
+      <el-pagination align="center" @size-change="handleSizeChange" @current-change="handleCurrentChange"
+        :current-page="pageNum" :page-sizes="[5, 10, 15, 20]" :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
 
     <!--  撤销会议原因弹窗  -->
-    <el-dialog title="撤销会议原因" :visible.sync="dialogRevokeVisible" width="30%" center>
-      <el-form label-width="150px" :model="formRevoke" ref="formRevoke" :rules="formRevokeFormRules">
+    <el-dialog title="撤销会议原因" :visible.sync="dialogRevokeVisible" width="300px" center>
+      <el-form label-width="100px" :model="formRevoke" ref="formRevoke" :rules="formRevokeFormRules">
         <el-form-item label="会议名称" prop="meetingname">
           <el-input v-model="formRevoke.meetingname" autocomplete="off" disabled></el-input>
         </el-form-item>
-        <el-form-item label="取消会议原因" prop="canceledreason">
+        <el-form-item label="取消原因" prop="canceledreason">
           <el-input v-model="formRevoke.canceledreason" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
@@ -108,16 +104,10 @@
     </el-dialog>
 
     <!--  添加参会员工弹窗  -->
-    <el-dialog title="选择参会员工" :visible.sync="dialogMeetingVisible" width="44%" center>
-      <div style="margin-bottom: 10px;text-align: center"><el-tag type="danger">注意：不要提交重复的参会人员</el-tag></div>
-      <el-transfer
-          :titles="['选择参会人员','已选参会人员']"
-          :button-texts="['移除', '添加']"
-          filterable
-          filter-placeholder="请输入员工姓名"
-          v-model="checked"
-          :data="transferData"
-          @change="getObject">
+    <el-dialog title="选择参会员工" :visible.sync="dialogMeetingVisible" width="673px" class="el-dialog-add" center>
+      <!-- <div style="margin-bottom: 10px;text-align: center"><el-tag type="danger">注意：不要提交重复的参会人员</el-tag></div> -->
+      <el-transfer :titles="['选择参会人员', '已选参会人员']" :button-texts="['移除', '添加']" filterable filter-placeholder="请输入员工姓名"
+        v-model="checked" :data="transferData" @change="getObject">
       </el-transfer>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogMeetingVisible = false">取 消</el-button>
@@ -126,8 +116,9 @@
     </el-dialog>
 
     <!--  编辑弹窗  -->
-    <el-dialog title="编辑会议信息" :visible.sync="dialogEditVisible" width="30%" top="50px" center>
-      <el-form label-width="150px" :model="formEdit" ref="formEdit" :rules="editFormRules">
+    <el-dialog title="编辑会议信息" :visible.sync="dialogEditVisible" width="420px" top="50px" center
+      class="el-dialog-editMeet">
+      <el-form label-width="120px" :model="formEdit" ref="formEdit" :rules="editFormRules">
         <el-form-item label="会议名称" prop="meetingname">
           <el-input v-model="formEdit.meetingname" autocomplete="off"></el-input>
         </el-form-item>
@@ -136,35 +127,27 @@
             <el-option v-for="mt in meetingroom" :key="mt.roomid" :label="mt.roomname" :value="mt.roomid"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="会议开始签到时间" prop="signinstarttime">
-          <el-date-picker v-model="formEdit.signinstarttime"
-                          type="datetime"
-                          placeholder="选择预定日期时间"
-                          value-format="yyyy-MM-dd HH:mm:ss">
+        <el-form-item label="开始签到时间" prop="signinstarttime">
+          <el-date-picker v-model="formEdit.signinstarttime" type="datetime" placeholder="选择预定日期时间"
+            value-format="yyyy-MM-dd HH:mm:ss">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="会议结束签到时间" prop="signinendtime">
-          <el-date-picker v-model="formEdit.signinendtime"
-                          type="datetime"
-                          placeholder="选择预定日期时间"
-                          value-format="yyyy-MM-dd HH:mm:ss">
+        <el-form-item label="结束签到时间" prop="signinendtime">
+          <el-date-picker v-model="formEdit.signinendtime" type="datetime" placeholder="选择预定日期时间"
+            value-format="yyyy-MM-dd HH:mm:ss">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="预计参加会议的人数" prop="numberofparticipants">
+        <el-form-item label="预计参加人数" prop="numberofparticipants">
           <el-input v-model="formEdit.numberofparticipants" autocomplete="off" disabled></el-input>
         </el-form-item>
-        <el-form-item label="预计会议开始时间" prop="starttime">
-          <el-date-picker v-model="formEdit.starttime"
-                          type="datetime"
-                          placeholder="选择预定日期时间"
-                          value-format="yyyy-MM-dd HH:mm:ss">
+        <el-form-item label="预计开始时间" prop="starttime">
+          <el-date-picker v-model="formEdit.starttime" type="datetime" placeholder="选择预定日期时间"
+            value-format="yyyy-MM-dd HH:mm:ss">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="预计会议结束时间" prop="endtime">
-          <el-date-picker v-model="formEdit.endtime"
-                          type="datetime"
-                          placeholder="选择预定日期时间"
-                          value-format="yyyy-MM-dd HH:mm:ss">
+        <el-form-item label="预计结束时间" prop="endtime">
+          <el-date-picker v-model="formEdit.endtime" type="datetime" placeholder="选择预定日期时间"
+            value-format="yyyy-MM-dd HH:mm:ss">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="会议说明" prop="description">
@@ -204,30 +187,30 @@ export default {
       employeeData: [],
       formRevokeFormRules: {
         canceledreason: [
-          {required: true, message: '请输入取消会议的原因', trigger: 'blur'}
+          { required: true, message: '请输入取消会议的原因', trigger: 'blur' }
         ]
       },
       editFormRules: {
         meetingname: [
-          {required: true, message: '请输入会议名称', trigger: 'blur'}
+          { required: true, message: '请输入会议名称', trigger: 'blur' }
         ],
         numberofparticipants: [
-          {required: true, message: '请输入预计参加会议的人数', trigger: 'blur'}
+          { required: true, message: '请输入预计参加会议的人数', trigger: 'blur' }
         ],
         starttime: [
-          {required: true, message: '请选择预计会议开始时间', trigger: 'blur'}
+          { required: true, message: '请选择预计会议开始时间', trigger: 'blur' }
         ],
         endtime: [
-          {required: true, message: '请选择预计会议结束时间', trigger: 'blur'}
+          { required: true, message: '请选择预计会议结束时间', trigger: 'blur' }
         ],
         roomid: [
-          {required: true, message: '请选择会议室', trigger: 'blur'}
+          { required: true, message: '请选择会议室', trigger: 'blur' }
         ],
         signinstarttime: [
-          {required: true, message: '请选择会议开始签到时间', trigger: 'blur'}
+          { required: true, message: '请选择会议开始签到时间', trigger: 'blur' }
         ],
         signinendtime: [
-          {required: true, message: '请选择会议签到结束时间', trigger: 'blur'}
+          { required: true, message: '请选择会议签到结束时间', trigger: 'blur' }
         ]
       },
       total: 0,
@@ -295,10 +278,10 @@ export default {
         console.log(res)
         this.employeeData = res.data
       })
-      this.request.post("/bookings/queryNum/" + meetingid).then(res=>{
+      this.request.post("/bookings/queryNum/" + meetingid).then(res => {
         this.totalNumber = res.data
       })
-      this.request.post("/bookings/signed/" + meetingid).then(res=>{
+      this.request.post("/bookings/signed/" + meetingid).then(res => {
         this.signedNumber = res.data
       })
       this.signedNumber = ''
@@ -440,7 +423,7 @@ export default {
     //补签
     signature(meetingid, employeeid) {
       const location = localStorage.getItem("location")
-      this.request.post("/addMeeting/signature", {meetingid, employeeid, location}).then(res => {
+      this.request.post("/addMeeting/signature", { meetingid, employeeid, location }).then(res => {
         if (res.code === 200) {
           this.$message({
             showClose: true,
@@ -457,9 +440,9 @@ export default {
         }
       })
     },
-    exp(meetingid){
-      window.open("http://localhost:8888/bookings/exports/"+ meetingid)
-    }
+    exp(meetingid) {
+      window.open("http://localhost:8888/bookings/exports/" + meetingid)
+    },
   }
 }
 </script>
@@ -473,4 +456,65 @@ export default {
   height: 100% !important;
 }
 
+.downloadFile {
+  margin-left: 10px;
+}
+
+@media (max-width: 600px) {
+  .downloadFile {
+    margin-top: 10px;
+    margin-left: 0;
+  }
+
+  .el-dialog-add .el-dialog {
+    margin-top: 10px !important;
+    width: 245px !important;
+  }
+
+  .el-transfer__buttons {
+    margin-top: 10px;
+    padding: 0px 15px;
+  }
+
+  .el-dialog-editMeet .el-dialog {
+    width: 95% !important;
+  }
+}
+
+@media (max-width: 600px) {
+
+  /* 卡片大小 */
+  .box-card {
+    width: 100%;
+    margin: auto;
+    font-size: 10px;
+  }
+
+  /* 输入框大小 */
+  .el-dialog .el-input {
+    width: 200px !important;
+  }
+
+  /* 文本输入域大小 */
+  .el-dialog .el-textarea {
+    width: 200px !important;
+  }
+
+  /* 时间选择器位置 */
+  .el-dialog .el-time-panel {
+    left: -20% !important;
+  }
+
+  /* 日期选择器位置 */
+  .el-dialog .el-picker-panel {
+    left: -10% !important;
+  }
+  /* 搜索框 */
+  .ScheduledInput .el-input--small{
+    display: block;
+  }
+  .ScheduledInput .el-button{
+    margin-top: 10px;
+  }
+}
 </style>
