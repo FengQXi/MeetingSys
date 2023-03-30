@@ -17,7 +17,8 @@
     </div>
 
     <!--  主体数据表格  -->
-    <el-table :data="tableData" v-loading="loadingData" border stripe :header-cell-class-name="headerBg">
+    <el-table :data="tableData" v-loading="loadingData" border stripe :header-cell-class-name="headerBg"
+      v-if="!dataShowMethod">
       <el-table-column prop="meetingname" label="会议名称" width="100px"></el-table-column>
       <el-table-column prop="roomname" label="会议室名称" width="100px"></el-table-column>
       <el-table-column prop="signinstarttime" label="签到开始时间" min-width="140px" sortable></el-table-column>
@@ -45,11 +46,45 @@
         </template>
       </el-table-column>
     </el-table>
+    <!--移动端 -->
+    <div class="infinite-list-wrapper" style="overflow:auto" v-if="dataShowMethod">
+      <ul class="list" v-infinite-scroll="load" infinite-scroll-disabled="disabled">
+        <li v-for="item in tableData" class="list-item" style="margin-bottom: 20px;">
+          <el-card :body-style="{ padding: '7px' }" shadow="never">
+            <div style="padding: 14px;">
+              <span>{{ item.meetingname }}</span>
+              <div class="bottom clearfix">
+                <div class="time" style="margin-bottom: 6px;">会议地点:&nbsp;{{ item.roomname }}</div>
+                <div class="time" style="margin-bottom: 6px;">开始时间:&nbsp;{{ item.starttime }}</div>
+                <div class="time">签到状态:&nbsp;
+                  <el-tag size="small" v-if="item.status === 0 && nowDate >= item.signinendtime"
+                    type="danger">未签到</el-tag>
+                  <el-tag size="small" v-if="item.status === 0 && nowDate <= item.signinstarttime"
+                    type="info">签到未开始</el-tag>
+                  <el-tag size="small"
+                    v-if="item.status === 0 && nowDate <= item.signinendtime && nowDate >= item.signinstarttime">正在签到</el-tag>
+                  <el-tag size="small" v-else-if="item.status === 1" type="success">已签到</el-tag>
+                </div>
+                <el-button type="success" icon="el-icon-check" circle class="button" @click="signIn(item.meetingid)"
+                  v-if="item.status === 0 && nowDate <= item.signinendtime && nowDate >= item.signinstarttime">
+                </el-button>
+              </div>
+            </div>
+          </el-card>
+        </li>
+      </ul>
+      <p v-if="loading">
+        <el-alert title="加载中..." type="success" :closable="false" center></el-alert>
+      </p>
+      <p v-if="noMore">
+        <el-alert title="没有更多了" type="info" :closable="false" center></el-alert>
+      </p>
+    </div>
 
     <!--  分页  -->
     <!-- 分页器适配 -->
     <!-- <div style="padding-left: 400px;padding-top: 15px"> -->
-    <div style="padding-top: 15px">
+    <div style="padding-top: 15px" v-if="!dataShowMethod">
       <el-pagination align="center" @size-change="handleSizeChange" @current-change="handleCurrentChange"
         :current-page="pageNum" :page-sizes="[5, 10, 15, 20]" :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper" :total="total">
@@ -105,13 +140,29 @@ export default {
       videoHeight: 400,
       meetingid: '',
       loadingData: false,
-      location: localStorage.getItem("location")
+      location: localStorage.getItem("location"),
+      count: 0,
+      loading: false
     }
   },
   //进入页面刷新数据
   created() {
     //请求分页查询数据
     this.load()
+  },
+  computed: {
+    dataShowMethod() {
+      if (document.documentElement.clientWidth <= 500)
+        return true
+      else
+        return false
+    },
+    noMore() {
+      return this.count > this.total
+    },
+    disabled() {
+      return this.loading || this.noMore
+    }
   },
   methods: {
     //分页查询
@@ -124,10 +175,20 @@ export default {
           meetingname: this.meetingname,
         }
       }).then(res => {
-        console.log(res)
-        this.tableData = res.data.records
-        this.total = res.data.total
-        this.loadingData = false
+        if (this.dataShowMethod && !this.noMore) {
+          this.loading = true
+          setTimeout(() => {
+            this.tableData = [...this.tableData, ...res.data.records]
+            this.total = res.data.total
+            this.count += 5
+            this.loading = false
+          }, 2000)
+        }
+        else {
+          this.tableData = res.data.records
+          this.total = res.data.total
+          this.loadingData = false
+        }
       });
     },
     //页数
@@ -341,7 +402,44 @@ export default {
   background: #eee !important;
 }
 
+.headerBg {
+  background: #eee !important;
+}
+
+.time {
+  font-size: 13px;
+  color: #999;
+}
+
+.bottom {
+  margin-top: 13px;
+  line-height: 12px;
+}
+
+.button {
+  padding: 8px;
+  margin-left: 3px;
+  float: right;
+}
+
+.image {
+  width: 50%;
+  display: block;
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+}
+
+.clearfix:after {
+  clear: both
+}
+
+
 @media screen and (max-width: 600px) {
+
   /* 搜索框 */
   .MeetingInput .el-input--small {
     display: block;

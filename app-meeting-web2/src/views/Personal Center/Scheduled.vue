@@ -17,7 +17,8 @@
     </div>
 
     <!--  主体数据表格  -->
-    <el-table :data="tableData" v-loading="loadingData" border stripe :header-cell-class-name="headerBg">
+    <!-- PC端 -->
+    <el-table :data="tableData" v-loading="loadingData" border stripe :header-cell-class-name="headerBg" v-if="!dataShowMethod">
       <el-table-column prop="meetingname" label="会议名称" width="100px"></el-table-column>
       <el-table-column prop="roomname" label="会议室名称" width="100px"></el-table-column>
       <el-table-column prop="starttime" label="会议开始时间" min-width="140px" ortable></el-table-column>
@@ -36,6 +37,52 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 移动端 -->
+    <div class="infinite-list-wrapper" style="overflow:auto" v-if="dataShowMethod">
+      <ul class="list" v-infinite-scroll="load" infinite-scroll-disabled="disabled">
+        <li v-for="item in tableData" class="list-item" style="margin-bottom: 20px;">
+              <el-card :body-style="{ padding: '7px' }" shadow="never">
+                <div style="padding: 14px;">
+                  <span>{{ item.meetingname }}</span>
+                  <div class="bottom clearfix">
+                    <div class="time" style="margin-bottom: 6px;">会议地点:&nbsp;{{ item.roomname }}</div>
+                    <div class="time">开始时间:&nbsp;{{ item.starttime }}</div>
+                    <el-button 
+                      type="warning" 
+                      icon="el-icon-edit" 
+                      circle 
+                      class="button" 
+                      @click="handleEdit(item)"></el-button>
+                    <el-button 
+                      type="success" 
+                      icon="el-icon-circle-plus-outline" 
+                      circle 
+                      class="button" 
+                      @click="addMeeting(item.meetingid)"></el-button>
+                    <el-button 
+                      type="primary" 
+                      icon="el-icon-view" 
+                      circle 
+                      class="button" 
+                      @click="participants(item.meetingid)"></el-button>
+                    <el-button 
+                      type="danger" 
+                      icon="el-icon-circle-close" 
+                      circle 
+                      class="button" 
+                      @click="cancelmeeting(item.meetingid)"></el-button>
+                  </div>
+                </div>
+              </el-card>
+        </li>
+      </ul>
+      <p v-if="loading">
+        <el-alert title="加载中..." type="success" :closable="false" center></el-alert>
+      </p>
+      <p v-if="noMore">
+        <el-alert title="没有更多了" type="info" :closable="false" center></el-alert>
+      </p>
+    </div>
 
     <!--  查看考勤信息的弹窗  -->
     <el-dialog title="查看考勤信息" :visible.sync="dialogVisible" width="90%" center>
@@ -80,7 +127,7 @@
     </el-dialog>
 
     <!--  分页  -->
-    <div style="padding-top: 15px">
+    <div style="padding-top: 15px" v-if="!dataShowMethod">
       <el-pagination align="center" @size-change="handleSizeChange" @current-change="handleCurrentChange"
         :current-page="pageNum" :page-sizes="[5, 10, 15, 20]" :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper" :total="total">
@@ -88,8 +135,8 @@
     </div>
 
     <!--  撤销会议原因弹窗  -->
-    <el-dialog title="撤销会议原因" :visible.sync="dialogRevokeVisible" width="300px" center>
-      <el-form label-width="100px" :model="formRevoke" ref="formRevoke" :rules="formRevokeFormRules">
+    <el-dialog title="撤销会议原因" :visible.sync="dialogRevokeVisible" width="300px" center class="el-dialog-editReason">
+      <el-form label-width="70px" :model="formRevoke" ref="formRevoke" :rules="formRevokeFormRules">
         <el-form-item label="会议名称" prop="meetingname">
           <el-input v-model="formRevoke.meetingname" autocomplete="off" disabled></el-input>
         </el-form-item>
@@ -227,6 +274,8 @@ export default {
       totalNumber: '',
       signedNumber: '',
       loadingData: false,
+      count: 0,
+      loading:false
     }
   },
   //进入页面刷新数据
@@ -237,6 +286,20 @@ export default {
       console.log(res)
       this.meetingroom = res.data
     })
+  },
+  computed:{
+    dataShowMethod() {
+      if (document.documentElement.clientWidth <= 500)
+        return true
+      else
+        return false
+    },
+    noMore() {
+      return this.count > this.total
+    },
+    disabled() {
+      return this.loading || this.noMore
+    }
   },
   methods: {
     //请求分页查询数据
@@ -249,10 +312,20 @@ export default {
           meetingname: this.meetingname
         }
       }).then(res => {
-        console.log(res)
-        this.tableData = res.data.records
-        this.total = res.data.total
-        this.loadingData = false
+        if (this.dataShowMethod && !this.noMore) {
+          this.loading = true
+          setTimeout(() => {
+            this.tableData = [...this.tableData, ...res.data.records]
+            this.total = res.data.total
+            this.count += 5
+            this.loading = false
+          }, 2000)
+        }
+        else {
+          this.tableData = res.data.records
+          this.total = res.data.total
+          this.loadingData = false
+        }
       });
     },
     //页数
@@ -460,6 +533,38 @@ export default {
   margin-left: 10px;
 }
 
+.time {
+  font-size: 13px;
+  color: #999;
+}
+
+.bottom {
+  margin-top: 13px;
+  line-height: 12px;
+}
+
+.button {
+  padding: 7px;
+  margin-left: 3px !important;
+  margin-top: 3px !important;
+  float: right;
+}
+
+.image {
+  width: 50%;
+  display: block;
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+}
+
+.clearfix:after {
+  clear: both
+}
+
 @media (max-width: 600px) {
   .downloadFile {
     margin-top: 10px;
@@ -477,6 +582,10 @@ export default {
   }
 
   .el-dialog-editMeet .el-dialog {
+    width: 95% !important;
+  }
+
+  .el-dialog-editReason .el-dialog {
     width: 95% !important;
   }
 }

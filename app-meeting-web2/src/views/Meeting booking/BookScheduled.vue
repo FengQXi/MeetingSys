@@ -113,7 +113,7 @@ export default {
               this.$message({
                 showClose: true,
                 type: "error",
-                message: "预定会议失败",
+                message: res.message,
               })
             }
           })

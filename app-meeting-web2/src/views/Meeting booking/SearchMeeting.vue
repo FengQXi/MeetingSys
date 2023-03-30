@@ -43,7 +43,7 @@
 
     <!--  主体数据表格  -->
     <el-table style="margin-top: 5px" :data="tableData" v-loading="loading" border stripe
-      :header-cell-class-name="headerBg" :default-sort="{ prop: 'roomid' }">
+      :header-cell-class-name="headerBg" :default-sort="{ prop: 'roomid' }" v-if="!dataShowMethod">
       <el-table-column prop="meetingid" label="会议ID" sortable width="90">
       </el-table-column>
       <el-table-column prop="meetingname" label="会议名称" width="100">
@@ -71,9 +71,50 @@
         </template>
       </el-table-column>
     </el-table>
+    <div class="infinite-list-wrapper" style="overflow:auto" v-if="dataShowMethod">
+      <ul class="list" v-infinite-scroll="load" infinite-scroll-disabled="disabled">
+        <li v-for="item in tableData" class="list-item" style="margin-bottom: 20px;">
+              <el-card :body-style="{ padding: '7px' }" shadow="never">
+                <div style="padding: 14px;">
+                  <span>{{ item.meetingname }}</span>
+                  <div class="bottom clearfix">
+                    <div class="time" style="margin-bottom: 6px;">会议地点:&nbsp;{{ item.roomname }}</div>
+                    <div class="time">开始时间:&nbsp;{{ item.starttime }}</div>
+                    <el-button 
+                      type="danger" 
+                      icon="el-icon-delete" 
+                      circle 
+                      class="button" 
+                      @click="handleDelete(item.meetingid)"
+                      v-if="item.reservationistid === employee.employeeid"></el-button>
+                    <el-button 
+                      type="primary" 
+                      icon="el-icon-user" 
+                      circle 
+                      class="button" 
+                      @click="participants(item.meetingid)"></el-button>
+                    <el-button 
+                      type="primary" 
+                      icon="el-icon-s-promotion" 
+                      circle 
+                      class="button" 
+                      @click="meetingLook(item.meetingid)"></el-button>
+                  </div>
+                </div>
+              </el-card>
+        </li>
+      </ul>
+      <p v-if="loading">
+        <el-alert title="加载中..." type="success" :closable="false" center></el-alert>
+      </p>
+      <p v-if="noMore">
+        <el-alert title="没有更多了" type="info" :closable="false" center></el-alert>
+      </p>
+    </div>
+
 
     <!--  分页  -->
-    <div style="padding-top: 15px">
+    <div style="padding-top: 15px" v-if="!dataShowMethod">
       <el-pagination align="center" @size-change="handleSizeChange" @current-change="handleCurrentChange"
         :current-page="pageNum" :page-sizes="[5, 10, 15, 20]" :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper" :total="total">
@@ -140,6 +181,8 @@ export default {
       dialogEditVisible: false,
       loading: false,
       employee: localStorage.getItem("employee") ? JSON.parse(localStorage.getItem("employee")) : {},
+      count: 0,
+      loading: false
     }
   },
   //进入页面刷新数据
@@ -160,6 +203,18 @@ export default {
         return "horizontal"
       else
         return "vertical"
+    },
+    dataShowMethod() {
+      if (document.documentElement.clientWidth <= 500)
+        return true
+      else
+        return false
+    },
+    noMore() {
+      return this.count > this.total
+    },
+    disabled() {
+      return this.loading || this.noMore
     }
   },
   methods: {
@@ -177,10 +232,20 @@ export default {
           starttime: this.starttime,
         }
       }).then(res => {
-        console.log(res)
-        this.tableData = res.data.records
-        this.total = res.data.total
-        this.loading = false
+        if (this.dataShowMethod && !this.noMore) {
+          this.loading = true
+          setTimeout(() => {
+            this.tableData = [...this.tableData, ...res.data.records]
+            this.total = res.data.total
+            this.count += 5
+            this.loading = false
+          }, 2000)
+        }
+        else {
+          this.tableData = res.data.records
+          this.total = res.data.total
+          this.loading = false
+        }
       });
     },
     //页数
@@ -256,7 +321,36 @@ export default {
 .headerBg {
   background: #eee !important;
 }
+.time {
+  font-size: 13px;
+  color: #999;
+}
 
+.bottom {
+  margin-top: 13px;
+  line-height: 12px;
+}
+
+.button {
+  padding: 8px;
+  margin-left: 3px;
+  float: right;
+}
+
+.image {
+  width: 50%;
+  display: block;
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+}
+
+.clearfix:after {
+  clear: both
+}
 .searchInput .searchOptionInput {
   display: inline-block;
 }
