@@ -182,13 +182,13 @@ export default {
       loading: false,
       employee: localStorage.getItem("employee") ? JSON.parse(localStorage.getItem("employee")) : {},
       count: 0,
-      loading: false
+      loadingdate: false
     }
   },
   //进入页面刷新数据
   created() {
     //请求分页查询数据
-    this.load()
+    if(!this.dataShowMethod) this.load()
 
   },
   computed: {
@@ -220,7 +220,7 @@ export default {
   methods: {
     //分页查询
     load() {
-      this.loading = true
+      this.loadingdate = true
       this.request.get("/meeting/page", {
         params: {
           pageNum: this.pageNum,
@@ -232,19 +232,20 @@ export default {
           starttime: this.starttime,
         }
       }).then(res => {
-        if (this.dataShowMethod && !this.noMore) {
+        if (this.dataShowMethod) {
           this.loading = true
           setTimeout(() => {
             this.tableData = [...this.tableData, ...res.data.records]
             this.total = res.data.total
             this.count += 5
+            this.pageNum += 1
             this.loading = false
-          }, 2000)
+          }, 1000)
         }
         else {
           this.tableData = res.data.records
           this.total = res.data.total
-          this.loading = false
+          this.loadingdate = false
         }
       });
     },
