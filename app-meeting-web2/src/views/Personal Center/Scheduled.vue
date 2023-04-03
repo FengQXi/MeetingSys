@@ -280,7 +280,7 @@ export default {
   },
   //进入页面刷新数据
   created() {
-    this.load()
+    if(!this.dataShowMethod) this.load()
     //请求会议室数据
     this.request.post("/meetingroom/list").then(res => {
     //   console.log(res)
@@ -312,14 +312,15 @@ export default {
           meetingname: this.meetingname
         }
       }).then(res => {
-        if (this.dataShowMethod && !this.noMore) {
+        if (this.dataShowMethod) {
           this.loading = true
           setTimeout(() => {
             this.tableData = [...this.tableData, ...res.data.records]
             this.total = res.data.total
             this.count += 5
+            this.pageNum += 1
             this.loading = false
-          }, 2000)
+          }, 1000)
         }
         else {
           this.tableData = res.data.records

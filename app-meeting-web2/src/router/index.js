@@ -90,7 +90,7 @@ export const setRoutes = () => {
 }
 setRoutes()
 
-const whiteList = ['/login', '/faceLogin'] // no redirect whitelist
+const whiteList = ['/login', '/faceLogin','/register'] // no redirect whitelist
 //路由守卫
 router.beforeEach((to, from, next) => {
     nProgress.start()
@@ -130,7 +130,8 @@ router.beforeEach((to, from, next) => {
         if (whiteList.indexOf(to.path) !== -1) {
             // in the free login whitelist, go directly
             next()
-        } else {
+        } 
+        else {
             // other pages that do not have permission to access are redirected to the login page.
             next(`/login?redirect=${to.path}`)
             nProgress.done()

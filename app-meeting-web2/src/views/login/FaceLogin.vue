@@ -3,17 +3,18 @@
         <router-view></router-view>
         <h1 style="margin-top: 50px;margin-bottom: 10px">人脸登录</h1>
         <video ref="canvasImg" id="videoCamera" :width="videoWidth" :height="videoHeight" :x5-video-player-fullscreen="true"
-            autoplay style="border-radius: 20px;"></video>
-        <img class="canvas_face" src="@/assets/face.gif" alt="">
+            autoplay style="border-radius: 20px;">
+        </video>
+        <img class="canvas_face" src="@/assets/face.gif" alt="" style="z-index: 99999;">
         <canvas style="display: none" id="canvasCamera" :width="videoWidth" :height="videoHeight"></canvas>
 
         <el-button @click="setImage" type="primary" icon="el-icon-camera"
             style="margin-top: 10px;width: 150px;height: 40px">人脸登录</el-button>
-        <el-upload :http-request="uploadImg" :show-file-list="false" action="#">
+        <!-- <el-upload :http-request="uploadImg" :show-file-list="false" action="#">
             <el-button type="primary" style="margin-top: 10px;width: 150px;height: 40px">
                 <i class="el-icon-picture"></i>图片上传
             </el-button>
-        </el-upload>
+        </el-upload> -->
     </div>
 </template>
 
@@ -25,8 +26,6 @@ export default {
     data() {
         return {
             // 视频调用相关数据开始
-            videoWidth: 450,
-            videoHeight: 450,
             imgSrc: "",
             thisCancas: null,
             thisContext: null,
@@ -41,9 +40,23 @@ export default {
             // }
         };
     },
+    computed: {
+        videoWidth() {
+            if (document.documentElement.clientWidth <= 500)
+                return document.documentElement.clientWidth * 0.95
+            else
+                return 450
+        },
+        videoHeight() {
+            if (document.documentElement.clientWidth <= 500)
+                return document.documentElement.clientWidth * 0.95
+            else
+                return 450
+        },
+    },
     mounted() {
-        console.log(this.$refs.canvasImg.offsetLeft)
-        console.log(this.$refs.canvasImg.offsetTop)
+        // console.log(this.$refs.canvasImg.offsetLeft)
+        // console.log(this.$refs.canvasImg.offsetTop)
         // 第一步打开摄像头
         this.getCompetence(); //调用摄像头
         // 获取地理位置
@@ -211,15 +224,28 @@ export default {
     margin-left: -63px;
 }
 
-.result_img {
+/* .result_img {
     width: 226px;
     height: 195px;
     background: #d8d8d8;
-}
+} */
 
 #bbb {
     margin: auto;
     width: 500px;
     text-align: center;
+}
+
+@media screen and (max-width: 500px) {
+    #bbb {
+        width: 95%;
+    }
+
+    .canvas_face {
+        width: 138%;
+        height: 138%;
+        margin-top: -120%;
+        margin-left: -20%;
+    }
 }
 </style>

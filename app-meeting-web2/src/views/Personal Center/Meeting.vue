@@ -148,7 +148,7 @@ export default {
   //进入页面刷新数据
   created() {
     //请求分页查询数据
-    this.load()
+    if(!this.dataShowMethod) this.load()
   },
   computed: {
     dataShowMethod() {
@@ -175,14 +175,15 @@ export default {
           meetingname: this.meetingname,
         }
       }).then(res => {
-        if (this.dataShowMethod && !this.noMore) {
+        if (this.dataShowMethod) {
           this.loading = true
           setTimeout(() => {
             this.tableData = [...this.tableData, ...res.data.records]
             this.total = res.data.total
             this.count += 5
+            this.pageNum += 1
             this.loading = false
-          }, 2000)
+          }, 1000)
         }
         else {
           this.tableData = res.data.records
