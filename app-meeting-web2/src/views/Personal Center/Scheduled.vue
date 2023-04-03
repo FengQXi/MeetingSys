@@ -283,7 +283,7 @@ export default {
     this.load()
     //请求会议室数据
     this.request.post("/meetingroom/list").then(res => {
-      console.log(res)
+    //   console.log(res)
       this.meetingroom = res.data
     })
   },
@@ -348,7 +348,7 @@ export default {
       this.meetingid = meetingid
       this.dialogVisible = true
       this.request.post("/bookings/participants/" + meetingid).then(res => {
-        console.log(res)
+        // console.log(res)
         this.employeeData = res.data
       })
       this.request.post("/bookings/queryNum/" + meetingid).then(res => {
@@ -392,7 +392,7 @@ export default {
       this.$refs['formRevoke'].validate((valid) => {
         if (valid) {
           this.request.post("/bookings/cancelmeeting/" + this.meetingid, this.formRevoke.canceledreason).then(res => {
-            console.log(res)
+            // console.log(res)
             if (res.code === 200) {
               this.$message({
                 showClose: true,
@@ -426,7 +426,7 @@ export default {
       this.dialogMeetingVisible = true
       this.meetingid = meetingid
       this.request.post("/employee/list").then(res => {
-        console.log(res)
+        // console.log(res)
         let testData = res.data
         let data = [];
         for (let i = 0; i < testData.length; i++) {
@@ -445,7 +445,7 @@ export default {
     //添加参会员工
     addEmployee() {
       this.request.post("/addMeeting/addEmployee/" + this.meetingid, this.checked).then(res => {
-        console.log(res)
+        // console.log(res)
         if (res.code === 200) {
           this.$message({
             showClose: true,
