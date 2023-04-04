@@ -146,6 +146,7 @@ export default {
                     navigator.mediaDevices.getUserMedia = function (constraints) {
                         // 首先获取现存的getUserMedia(如果存在)
                         let getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.getUserMedia;
+                        // let getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
                         // 有些浏览器不支持，会返回错误信息
                         // 保持接口一致
                         if (!getUserMedia) {
