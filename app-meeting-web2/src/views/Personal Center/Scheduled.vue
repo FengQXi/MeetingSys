@@ -630,7 +630,7 @@ export default {
 
 @media screen and (max-width: 500px) {
    .el-dialog__wrapper .el-dialog {
-      width: 300px !important;
+      width: 80% !important;
     }
     .el-dialog__body{
         padding: 10px 20px!important;
@@ -640,6 +640,9 @@ export default {
     }
     .el-select,.el-input{
         width: 180px!important;
+    }
+    .el-form-item__content {
+        margin-left: 70px!important;
     }
 }
 </style>
