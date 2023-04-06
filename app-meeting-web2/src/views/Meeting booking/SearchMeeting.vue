@@ -381,16 +381,6 @@ export default {
   display: inline-block;
 }
 @media screen and (max-width: 600px) {
-
-  /* 搜索框 */
-  /* .searchInput .el-input--small {
-    display: block;
-  } */
-
-  /* .searchInput .el-button {
-    margin-top: 10px;
-  } */
-
   .searchInput .searchOptionInput {
     margin: 10px 0px 0px 0px !important;
     display: block;
@@ -419,20 +409,5 @@ export default {
   .searchInput .el-button {
     margin-top: 10px;
   }
-}
-
-@media screen and (max-width: 500px) {
-   .el-dialog__wrapper .el-dialog {
-      width: 300px !important;
-    }
-    .el-dialog__body{
-        padding: 10px 20px!important;
-    }
-    .el-form-item__label{
-        width: 68px!important;
-    }
-    .el-select,.el-input{
-        width: 180px!important;
-    }
 }
 </style>

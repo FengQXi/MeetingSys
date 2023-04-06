@@ -124,7 +124,7 @@
 
         <!--  撤销会议原因弹窗  -->
         <el-dialog title="撤销会议原因" :visible.sync="dialogRevokeVisible" width="300px" center class="el-dialog-editReason">
-            <el-form label-width="70px" :model="formRevoke" ref="formRevoke" :rules="formRevokeFormRules">
+            <el-form label-width="100px" :model="formRevoke" ref="formRevoke" :rules="formRevokeFormRules">
                 <el-form-item label="会议名称" prop="meetingname">
                     <el-input v-model="formRevoke.meetingname" autocomplete="off" disabled></el-input>
                 </el-form-item>
@@ -520,7 +520,7 @@ export default {
             });
         }
     }
-}
+} 
 </script>
 
 <style>
@@ -558,8 +558,7 @@ export default {
     display: block;
 }
 
-.clearfix:before,
-.clearfix:after {
+.clearfix:before, .clearfix:after {
     display: table;
     content: "";
 }
@@ -567,7 +566,10 @@ export default {
 .clearfix:after {
     clear: both
 }
-
+/* 
+    添加人员弹出框
+    转移框
+ */
 @media (max-width: 600px) {
     .downloadFile {
         margin-top: 10px;
@@ -592,7 +594,7 @@ export default {
         width: 95% !important;
     }
 }
-
+/* 编辑信息弹出框框 */
 @media (max-width: 600px) {
 
     /* 卡片大小 */
@@ -629,29 +631,6 @@ export default {
 
     .ScheduledInput .el-button {
         margin-top: 10px;
-    }
-}
-
-@media screen and (max-width: 500px) {
-    .el-dialog__wrapper .el-dialog {
-        width: 80% !important;
-    }
-
-    .el-dialog__body {
-        padding: 10px 20px !important;
-    }
-
-    .el-form-item__label {
-        width: 68px !important;
-    }
-
-    .el-select,
-    .el-input {
-        width: 180px !important;
-    }
-
-    .el-form-item__content {
-        margin-left: 70px !important;
     }
 }
 </style>

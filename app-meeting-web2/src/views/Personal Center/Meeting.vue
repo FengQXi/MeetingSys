@@ -82,8 +82,6 @@
     </div>
 
     <!--  分页  -->
-    <!-- 分页器适配 -->
-    <!-- <div style="padding-left: 400px;padding-top: 15px"> -->
     <div style="padding-top: 15px" v-if="!dataShowMethod">
       <el-pagination align="center" @size-change="handleSizeChange" @current-change="handleCurrentChange"
         :current-page="pageNum" :page-sizes="[5, 10, 15, 20]" :page-size="pageSize"
@@ -92,16 +90,34 @@
     </div>
 
     <!--  签到  -->
-    <el-dialog title="签到" :visible.sync="visible" @close="onCancel" width="1065px" center top="20px">
-      <div class="box">
+    <el-dialog title="签到" :visible.sync="visible" @close="onCancel" :width="sginWidth" center top="20px" class="sgin">
+      <!-- PC端 -->
+      <div class="box" v-if="!dataShowMethod">
         <video id="videoCamera" class="canvas" :width="videoWidth" :height="videoHeight" autoPlay></video>
         <canvas id="canvasCamera" class="canvas" :width="videoWidth" :height="videoHeight"></canvas>
       </div>
+      <!-- 移动端 -->
+      <div class="box" v-if="dataShowMethod">
+        <video id="videoCamera" class="canvas" :width="videoWidth" :height="videoHeight" autoPlay v-show = "videoorcanvasShow" ></video>
+        <canvas id="canvasCamera" class="canvas" :width="videoWidth" :height="videoHeight" v-show = "!videoorcanvasShow"></canvas>
+      </div>
       <div slot="footer">
-        <el-button v-if="open === false" @click="drawImage" icon="el-icon-camera" size="small">拍照</el-button>
+        <el-button 
+          v-if="open === false" 
+          @click="
+            drawImage();
+            videoorcanvasShow = false" 
+          icon="el-icon-camera" 
+          size="small">拍照</el-button>
         <el-button v-if="open" @click="getCompetence" icon="el-icon-video-camera" size="small">打开摄像头</el-button>
         <el-button v-else @click="stopNavigator" icon="el-icon-switch-button" size="small">关闭摄像头</el-button>
-        <el-button v-if="open === false" @click="resetCanvas" icon="el-icon-refresh" size="small">重置</el-button>
+        <el-button 
+          v-if="open === false" 
+          @click="
+            resetCanvas();
+            videoorcanvasShow = true" 
+          icon="el-icon-refresh" 
+          size="small">重置</el-button>
         <el-button @click="onUpload" :loading="loading" type="primary" icon="el-icon-circle-check"
           size="small">提交</el-button>
         <el-upload action :http-request="uploadImg" :show-file-list="false"
@@ -142,7 +158,9 @@ export default {
       loadingData: false,
       location: localStorage.getItem("location"),
       count: 0,
-      loading: false
+      loading: false,
+      sginWidth:'1050px',
+      videoorcanvasShow:true
     }
   },
   //进入页面刷新数据
@@ -152,8 +170,12 @@ export default {
   },
   computed: {
     dataShowMethod() {
-      if (document.documentElement.clientWidth <= 500)
+      if (document.documentElement.clientWidth <= 500){
+        this.videoWidth = document.documentElement.clientWidth * 0.95 - 50
+        this.videoHeight = document.documentElement.clientWidth * 1.1
+        this.sginWidth = document.documentElement.clientWidth * 0.95 + 'px'
         return true
+      }
       else
         return false
     },
@@ -447,6 +469,9 @@ export default {
   }
 
   .MeetingInput .el-button {
+    margin-top: 10px;
+  }
+  .sgin .el-button {
     margin-top: 10px;
   }
 }

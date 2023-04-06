@@ -12,7 +12,7 @@
     "date-fns": "^2.28.0",
     "dayjs": "^1.11.2",
     "echarts": "^5.3.3",
-    "element-ui": "^2.15.8",
+    "element-ui": "^2.15.13",
     "lib-flexible": "^0.3.2",
     "nprogress": "^0.2.0",
     "screenfull": "^6.0.2",

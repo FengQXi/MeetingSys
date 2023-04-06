@@ -1,9 +1,10 @@
 <template>
   <el-card style="width: 1000px;height: 620px; margin:0px auto 0;">
-      <el-form label-width="80px" style="width: 500px;height: 500px;margin: 10px auto 0" :model="form" ref="form" :rules="Rules">
-        <el-form-item label="真实姓名" prop="employeename">
-          <el-input v-model="form.employeename" autocomplete="off"></el-input>
-        </el-form-item>
+    <el-form label-width="80px" style="width: 500px;height: 500px;margin: 10px auto 0" :model="form" ref="form"
+      :rules="Rules">
+      <el-form-item label="真实姓名" prop="employeename">
+        <el-input v-model="form.employeename" autocomplete="off"></el-input>
+      </el-form-item>
       <el-form-item label="账号">
         <el-input v-model="form.username" disabled autocomplete="off"></el-input>
         <el-alert title="需要修改请联系管理员" :closable="false" type="info" style="line-height: 12px;"></el-alert>
@@ -14,59 +15,75 @@
       <el-form-item label="邮箱" prop="email">
         <el-input v-model="form.email" autocomplete="off"></el-input>
       </el-form-item>
-        <el-form-item label="所属部门">
-          <el-select v-model="form.departmentid" disabled>
-            <el-option v-for="dep in department" :key="dep.departmentid" :label="dep.departmentname" :value="dep.departmentid"></el-option>
-          </el-select>
-          <el-alert title="需要修改请联系管理员" :closable="false" type="info" style="line-height: 12px;"></el-alert>
-        </el-form-item>
-        <el-form-item label="添加人脸" prop="faceimg">
-          <el-button @click="onTake" icon="el-icon-camera" size="small">拍照上传</el-button>
-          <el-upload
-              class="avatar-uploader"
-              action=""
-              :http-request="uploadImg"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeUpload"
-              ref="upload">
-            <img v-if="form.faceimg" :src="'http://localhost:8888/download?name='+form.faceimg" class="avatar" alt="图片">
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-          </el-upload>
-        </el-form-item>
-      <el-button type="primary" @click="save" style="margin-left: 200px;margin-top: 5px;width: 100px">确 定</el-button>
+      <el-form-item label="所属部门">
+        <el-select v-model="form.departmentid" disabled>
+          <el-option v-for="dep in department" :key="dep.departmentid" :label="dep.departmentname"
+            :value="dep.departmentid"></el-option>
+        </el-select>
+        <el-alert title="需要修改请联系管理员" :closable="false" type="info" style="line-height: 12px;"></el-alert>
+      </el-form-item>
+      <el-form-item label="添加人脸" prop="faceimg">
+        <el-button @click="onTake" icon="el-icon-camera" size="small">拍照上传</el-button>
+        <el-upload class="avatar-uploader" action="" :http-request="uploadImg" :show-file-list="false"
+          :on-success="handleAvatarSuccess" :before-upload="beforeUpload" ref="upload">
+          <img v-if="form.faceimg" :src="'http://localhost:8888/download?name=' + form.faceimg" class="avatar" alt="图片">
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+        </el-upload>
+      </el-form-item>
+      <el-button type="primary" @click="save" style="margin-left: 200px;margin-top: 5px;width: 100px">确
+        定</el-button>
     </el-form>
 
     <!--  拍照上传弹窗  -->
-    <el-dialog title="拍照上传" :visible.sync="visible" @close="onCancel" width="1065px" top="20px">
-      <div class="box">
+    <el-dialog title="拍照上传" :visible.sync="visible" @close="onCancel" :width="sginWidth" top="20px">
+      <!-- <div class="box">
+        <video id="videoCamera" class="canvas" :width="videoWidth" :height="videoHeight" autoPlay></video>
+        <canvas id="canvasCamera" class="canvas" :width="videoWidth" :height="videoHeight"></canvas>
+      </div> -->
+      <!-- PC端 -->
+      <div class="box" v-if="!dataShowMethod">
         <video id="videoCamera" class="canvas" :width="videoWidth" :height="videoHeight" autoPlay></video>
         <canvas id="canvasCamera" class="canvas" :width="videoWidth" :height="videoHeight"></canvas>
       </div>
+      <!-- 移动端 -->
+      <div class="box" v-if="dataShowMethod">
+        <video id="videoCamera" class="canvas" :width="videoWidth" :height="videoHeight" autoPlay v-show = "videoorcanvasShow" ></video>
+        <canvas id="canvasCamera" class="canvas" :width="videoWidth" :height="videoHeight" v-show = "!videoorcanvasShow"></canvas>
+      </div>
       <div slot="footer">
-        <el-button v-if="open === false" @click="drawImage" icon="el-icon-camera" size="small">拍照</el-button>
-        <el-button v-if="open" @click="getCompetence" icon="el-icon-video-camera" size="small">打开摄像头</el-button>
-        <el-button v-else @click="stopNavigator" icon="el-icon-switch-button" size="small">关闭摄像头</el-button>
-        <el-button v-if="open === false" @click="resetCanvas" icon="el-icon-refresh" size="small">重置</el-button>
+        <el-button 
+          v-if="open === false" 
+          @click="
+            drawImage();
+            videoorcanvasShow = false" 
+          icon="el-icon-camera" 
+          size="small">拍照</el-button>
+        <el-button v-if="open" @click="getCompetence" icon="el-icon-video-camera" size="small">打开</el-button>
+        <el-button v-else @click="stopNavigator" icon="el-icon-switch-button" size="small">关闭</el-button>
+        <el-button 
+          v-if="open === false" 
+          @click="
+            resetCanvas();
+            videoorcanvasShow = true" 
+          icon="el-icon-refresh" 
+          size="small">重置</el-button>
         <el-button @click="onUpload" :loading="loading" type="primary" icon="el-icon-upload2" size="small">上传</el-button>
       </div>
     </el-dialog>
   </el-card>
-
-
 </template>
 
 <script>
 export default {
   name: "Person",
-  data(){
-    let validateUserName = (rule,value,callback)=>{
-      if(!value){
+  data() {
+    let validateUserName = (rule, value, callback) => {
+      if (!value) {
         callback(new Error("真实姓名不能为空"))
-      }else{
-        if(value!==""){
+      } else {
+        if (value !== "") {
           const realnameReg = /^([a-zA-Z0-9\u4e00-\u9fa5\·]{1,5})$/;
-          if(!realnameReg.test(value)){
+          if (!realnameReg.test(value)) {
             callback(new Error('您的真实姓名格式错误,请输入1—5个英文或汉字!'));
           }
         }
@@ -99,7 +116,7 @@ export default {
         callback();
       }
     };
-    return{
+    return {
       form: {},
       department: [],
       departmentname: '',
@@ -113,33 +130,47 @@ export default {
       videoWidth: 500,
       videoHeight: 400,
       employee: localStorage.getItem("employee") ? JSON.parse(localStorage.getItem("employee")) : {},
-      Rules:{
+      Rules: {
         employeename: [
-          {required: true,validator:validateUserName, trigger: 'blur'}
+          { required: true, validator: validateUserName, trigger: 'blur' }
         ],
         phone: [
-          {required: true,validator:vaildateNumber, trigger: 'blur'},
+          { required: true, validator: vaildateNumber, trigger: 'blur' },
         ],
         email: [
-          {required: true,validator:validateEmail, trigger: 'blur'}
+          { required: true, validator: validateEmail, trigger: 'blur' }
         ],
         faceimg: [
-          {required: true,message: '请选择照片上传或者拍照上传', trigger: 'blur'}
+          { required: true, message: '请选择照片上传或者拍照上传', trigger: 'blur' }
         ]
       },
-      employeeid: localStorage.getItem("employeeid")
+      employeeid: localStorage.getItem("employeeid"),
+      sginWidth:'1050px',
+      videoorcanvasShow:true
     }
   },
   created() {
-   this.getUser().then(res=>{
-     this.form = res
-   })
-    this.request.get("/department/all").then(res=>{
+    this.getUser().then(res => {
+      this.form = res
+    })
+    this.request.get("/department/all").then(res => {
       this.department = res.data
     })
   },
-  methods:{
-    async getUser(){
+  computed: {
+    dataShowMethod() {
+      if (document.documentElement.clientWidth <= 500){
+        this.videoWidth = document.documentElement.clientWidth * 0.95 - 50
+        this.videoHeight = document.documentElement.clientWidth * 1.1
+        this.sginWidth = document.documentElement.clientWidth * 0.95 + 'px'
+        return true
+      }
+      else
+        return false
+    },
+  },
+  methods: {
+    async getUser() {
       return (await this.request.get("/employee/username/" + this.employee.username)).data
     },
     save() {
@@ -171,20 +202,20 @@ export default {
       })
     },
     //上传成功回调
-    handleAvatarSuccess (res) {
+    handleAvatarSuccess(res) {
       //this.form.faceimg = `http://localhost:8888/download?name=${res.data}`
     },
     //设置上传规则
-    beforeUpload (file) {
-      if(file){
+    beforeUpload(file) {
+      if (file) {
         const suffix = file.name.split('.')[1]
         const size = file.size / 1024 / 1024 < 2
-        if(['png','jpeg','jpg'].indexOf(suffix) < 0){
+        if (['png', 'jpeg', 'jpg'].indexOf(suffix) < 0) {
           this.$message.error('上传图片只支持 png、jpeg、jpg 格式！')
           this.$refs.upload.clearFiles()
           return false
         }
-        if(!size){
+        if (!size) {
           this.$message.error('上传文件大小不能超过 2MB!')
           return false
         }
@@ -201,11 +232,11 @@ export default {
       this.stopNavigator();
     },
     //图片上传
-    uploadImg(fileObj){
+    uploadImg(fileObj) {
       let formData = new FormData();
-      formData.append("file",fileObj.file)
-      this.request.post("/registered",formData,{params:{employeeid: this.employee.employeeid}}).then(res=>{
-        if (res.code === 200){
+      formData.append("file", fileObj.file)
+      this.request.post("/registered", formData, { params: { employeeid: this.employee.employeeid } }).then(res => {
+        if (res.code === 200) {
           this.form.faceimg = res.data
           this.$message({
             showClose: true,
@@ -214,7 +245,7 @@ export default {
           })
           this.visible = false
           this.load()
-        }else {
+        } else {
           this.$message({
             showClose: true,
             type: 'error',
@@ -227,11 +258,11 @@ export default {
     onUpload() {
       if (this.imgSrc) {
         let formData = new FormData()
-        formData.append("file",this.base64ToFile(this.imgSrc,"png"));
+        formData.append("file", this.base64ToFile(this.imgSrc, "png"));
         formData.append("flag", "videoImg"); // 额外参数
         this.loading = true
-        this.request.post("/registered",formData,{params:{employeeid: this.employee.employeeid}}).then(res=>{
-          if (res.code === 200){
+        this.request.post("/registered", formData, { params: { employeeid: this.employee.employeeid } }).then(res => {
+          if (res.code === 200) {
             this.form.faceimg = res.data
             this.$message({
               showClose: true,
@@ -239,7 +270,7 @@ export default {
               message: '人脸照片上传成功，请点击确定',
             })
             this.visible = false
-          }else {
+          } else {
             this.$message({
               showClose: true,
               type: 'error',
@@ -290,7 +321,7 @@ export default {
         }
         const constraints = {
           audio: false,
-          video: {width: _this.videoWidth, height: _this.videoHeight, transform: 'scaleX(-1)'}
+          video: { width: _this.videoWidth, height: _this.videoHeight, transform: 'scaleX(-1)' }
         };
         navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
           // 旧的浏览器可能没有srcObject
@@ -361,6 +392,7 @@ export default {
   text-align: center;
   margin-top: -30px;
 }
+
 .avatar-uploader .el-upload {
   border: 1px dashed #d9d9d9;
   border-radius: 6px;
@@ -368,9 +400,11 @@ export default {
   position: relative;
   overflow: hidden;
 }
+
 .avatar-uploader .el-upload:hover {
   border-color: #409EFF;
 }
+
 .avatar-uploader-icon {
   font-size: 28px;
   color: #8c939d;
@@ -379,15 +413,31 @@ export default {
   line-height: 138px;
   text-align: center;
 }
+
 .avatar {
   width: 148px;
   height: 148px;
   display: block;
 }
+
 .avatar-uploader .el-icon-plus:before {
   content: "上传人脸照片" !important;
   font-size: 12px;
   color: #000;
 }
 
+@media screen and (max-width: 600px) {
+  .el-card {
+    width: 100% !important;
+  }
+
+  .el-form {
+    width: 100% !important;
+  }
+
+  .avatar-uploader {
+    margin-top: 10px;
+  }
+
+}
 </style>

@@ -21,6 +21,10 @@
   border-radius: 3px;
   background: rgba(255, 255, 255, 1);
 }
+/* 弹出框弹出后body增加padding-right？？？解决方法 */
+body {
+  padding-right: 0 !important;
+}
 /* 组件适配—Message 消息提示 */
 @media screen and (max-width: 600px) {
     .el-message {
