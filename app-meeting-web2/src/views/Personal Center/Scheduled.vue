@@ -25,13 +25,15 @@
             <el-table-column prop="starttime" label="会议开始时间" min-width="140px" ortable></el-table-column>
             <el-table-column prop="endtime" label="会议结束时间" min-width="140px" sortable></el-table-column>
             <el-table-column prop="reservationtime" label="会议预定时间" min-width="140px"></el-table-column>
-            <el-table-column label="操作" align="center" width="480">
+            <el-table-column label="操作" align="center" width="520">
                 <template slot-scope="scope">
                     <el-button type="danger" size="small" @click="cancelmeeting(scope.row.meetingid)">撤销会议<i
                             class="el-icon-circle-close"></i></el-button>
-                    <el-button type="primary" size="small" @click="participants(scope.row.meetingid)">查看考勤信息<i
+                    <el-button type="primary" size="small" @click="participants(scope.row.meetingid)">查看考勤<i
                             class="el-icon-view"></i></el-button>
-                    <el-button type="success" size="small" @click="addMeeting(scope.row.meetingid)">添加参会员工<i
+                    <el-button type="success" size="small" @click="addMeeting(scope.row.meetingid)">添加员工<i
+                            class="el-icon-circle-plus-outline"></i></el-button>
+                    <el-button type="success" size="small" @click="getPassword(scope.row.meetingid)">显示密码<i
                             class="el-icon-circle-plus-outline"></i></el-button>
                     <el-button type="warning" size="small" @click="handleEdit(scope.row)">编辑<i class="el-icon-edit"></i>
                     </el-button>
@@ -50,6 +52,8 @@
                                 <div class="time">开始时间:&nbsp;{{ item.starttime }}</div>
                                 <el-button type="warning" icon="el-icon-edit" circle class="button"
                                     @click="handleEdit(item)"></el-button>
+                                <el-button type="success" icon="el-icon-circle-plus-outline" circle class="button"
+                                    @click="getPassword(item.meetingid)"></el-button>
                                 <el-button type="success" icon="el-icon-circle-plus-outline" circle class="button"
                                     @click="addMeeting(item.meetingid)"></el-button>
                                 <el-button type="primary" icon="el-icon-view" circle class="button"
@@ -196,6 +200,18 @@
             </div>
         </el-dialog>
 
+        <!--  密码签到  -->
+        <el-dialog title="密码签到" :visible.sync="passwordVisible" width="420px" top="250px" center>
+            <!-- <el-input placeholder="请输入内容" v-model="showPassword" clearable>
+            </el-input> -->
+            <el-row :gutter="12">
+                <el-col :span="4" v-for="(item, index) in showPassword" :key="index">
+                    <el-card shadow="always">
+                        {{ item }}
+                    </el-card>
+                </el-col>
+            </el-row>
+        </el-dialog>
     </div>
 </template>
 
@@ -215,6 +231,7 @@ export default {
             dialogRevokeVisible: false,
             dialogMeetingVisible: false,
             dialogEditVisible: false,
+            passwordVisible: false,
             meetingid: '',
             formRevoke: {},
             formEdit: {},
@@ -264,7 +281,8 @@ export default {
             signedNumber: '',
             loadingData: false,
             count: 0,
-            loading: false
+            loading: false,
+            showPassword: ''
         }
     },
     //进入页面刷新数据
@@ -350,6 +368,14 @@ export default {
             this.signedNumber = ''
             this.totalNumber = ''
             this.employeeData = []
+        },
+        //显示签到密码
+        getPassword(meetingid) {
+            this.meetingid = meetingid
+            this.passwordVisible = true
+            this.request.get("/getImage2").then(res => {
+                this.showPassword = res.data
+            })
         },
         //删除参会员工
         DeleteEmp(employeeid, meetingid) {
@@ -558,7 +584,8 @@ export default {
     display: block;
 }
 
-.clearfix:before, .clearfix:after {
+.clearfix:before,
+.clearfix:after {
     display: table;
     content: "";
 }
@@ -566,6 +593,7 @@ export default {
 .clearfix:after {
     clear: both
 }
+
 /* 
     添加人员弹出框
     转移框
@@ -594,6 +622,7 @@ export default {
         width: 95% !important;
     }
 }
+
 /* 编辑信息弹出框框 */
 @media (max-width: 600px) {
 

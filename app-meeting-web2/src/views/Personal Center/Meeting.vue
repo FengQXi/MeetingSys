@@ -38,11 +38,16 @@
           <el-tag size="small" v-else-if="scope.row.status === 1" type="success">已签到</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="操作" min-width="180px">
         <template slot-scope="scope">
-          <el-button type="success" size="small" @click="signIn(scope.row.meetingid)"
-            v-if="scope.row.status === 0 && nowDate <= scope.row.signinendtime && nowDate >= scope.row.signinstarttime">签到<i
-              class="el-icon-check"></i></el-button>
+          <el-button type="success" size="small" @click="signInVideo(scope.row.meetingid)"
+            v-if="scope.row.status === 0 && nowDate <= scope.row.signinendtime && nowDate >= scope.row.signinstarttime">人脸签到
+            <i class="el-icon-camera"></i>
+          </el-button>
+          <el-button type="success" size="small" @click="signInPassword(scope.row.meetingid)"
+            v-if="scope.row.status === 0 && nowDate <= scope.row.signinendtime && nowDate >= scope.row.signinstarttime">密码签到
+            <i class="el-icon-edit-outline"></i>
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -65,7 +70,11 @@
                     v-if="item.status === 0 && nowDate <= item.signinendtime && nowDate >= item.signinstarttime">正在签到</el-tag>
                   <el-tag size="small" v-else-if="item.status === 1" type="success">已签到</el-tag>
                 </div>
-                <el-button type="success" icon="el-icon-check" circle class="button" @click="signIn(item.meetingid)"
+                <el-button type="success" icon="el-icon-camera" circle class="button" @click="signInVideo(item.meetingid)"
+                  v-if="item.status === 0 && nowDate <= item.signinendtime && nowDate >= item.signinstarttime">
+                </el-button>
+                <el-button type="success" icon="el-icon-edit-outline" circle class="button"
+                  @click="signInPassword(item.meetingid)"
                   v-if="item.status === 0 && nowDate <= item.signinendtime && nowDate >= item.signinstarttime">
                 </el-button>
               </div>
@@ -89,8 +98,9 @@
       </el-pagination>
     </div>
 
-    <!--  签到  -->
-    <el-dialog title="签到" :visible.sync="visible" @close="onCancel" :width="sginWidth" center top="20px" class="sgin">
+    <!--  人脸签到  -->
+    <el-dialog title="人脸签到" :visible.sync="videoVisible" @close="onCancel" :width="sginWidth" center top="20px"
+      class="sgin">
       <!-- PC端 -->
       <div class="box" v-if="!dataShowMethod">
         <video id="videoCamera" class="canvas" :width="videoWidth" :height="videoHeight" autoPlay></video>
@@ -98,32 +108,35 @@
       </div>
       <!-- 移动端 -->
       <div class="box" v-if="dataShowMethod">
-        <video id="videoCamera" class="canvas" :width="videoWidth" :height="videoHeight" autoPlay v-show = "videoorcanvasShow" ></video>
-        <canvas id="canvasCamera" class="canvas" :width="videoWidth" :height="videoHeight" v-show = "!videoorcanvasShow"></canvas>
+        <video id="videoCamera" class="canvas" :width="videoWidth" :height="videoHeight" autoPlay
+          v-show="videoorcanvasShow"></video>
+        <canvas id="canvasCamera" class="canvas" :width="videoWidth" :height="videoHeight"
+          v-show="!videoorcanvasShow"></canvas>
       </div>
       <div slot="footer">
-        <el-button 
-          v-if="open === false" 
-          @click="
-            drawImage();
-            videoorcanvasShow = false" 
-          icon="el-icon-camera" 
-          size="small">拍照</el-button>
+        <el-button v-if="open === false" @click="
+          drawImage();
+        videoorcanvasShow = false" icon="el-icon-camera" size="small">拍照</el-button>
         <el-button v-if="open" @click="getCompetence" icon="el-icon-video-camera" size="small">打开摄像头</el-button>
         <el-button v-else @click="stopNavigator" icon="el-icon-switch-button" size="small">关闭摄像头</el-button>
-        <el-button 
-          v-if="open === false" 
-          @click="
-            resetCanvas();
-            videoorcanvasShow = true" 
-          icon="el-icon-refresh" 
-          size="small">重置</el-button>
+        <el-button v-if="open === false" @click="
+          resetCanvas();
+        videoorcanvasShow = true" icon="el-icon-refresh" size="small">重置</el-button>
         <el-button @click="onUpload" :loading="loading" type="primary" icon="el-icon-circle-check"
           size="small">提交</el-button>
         <el-upload action :http-request="uploadImg" :show-file-list="false"
           style="display: inline-block;margin-left: 7px">
           <el-button type="primary" style="margin-left: 5px"><i class="el-icon-picture"></i>图片上传</el-button>
         </el-upload>
+      </div>
+    </el-dialog>
+    <!--  密码签到  -->
+    <el-dialog title="密码签到" :visible.sync="passwordVisible" width="420px" top="50px" center>
+      <el-input placeholder="请输入内容" v-model="inputPassword" clearable>
+      </el-input>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="passwordVisible = false">取 消</el-button>
+        <el-button type="primary" @click="signPassword">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -146,7 +159,8 @@ export default {
       meetingname: '',
       headerBg: 'headerBg',
       imgSrc: "",
-      visible: false,//弹窗
+      videoVisible: false,//弹窗
+      passwordVisible: false,//弹窗
       loading: false,//上传按钮加载
       open: false,//控制摄像头开关
       thisVideo: null,
@@ -159,18 +173,19 @@ export default {
       location: localStorage.getItem("location"),
       count: 0,
       loading: false,
-      sginWidth:'1050px',
-      videoorcanvasShow:true
+      sginWidth: '1050px',
+      videoorcanvasShow: true,
+      inputPassword: ''
     }
   },
   //进入页面刷新数据
   created() {
     //请求分页查询数据
-    if(!this.dataShowMethod) this.load()
+    if (!this.dataShowMethod) this.load()
   },
   computed: {
     dataShowMethod() {
-      if (document.documentElement.clientWidth <= 500){
+      if (document.documentElement.clientWidth <= 500) {
         this.videoWidth = document.documentElement.clientWidth * 0.95 - 50
         this.videoHeight = document.documentElement.clientWidth * 1.1
         this.sginWidth = document.documentElement.clientWidth * 0.95 + 'px'
@@ -230,9 +245,14 @@ export default {
       this.load()
     },
     //签到
-    signIn(meetingid) {
+    signInVideo(meetingid) {
       this.meetingid = meetingid
-      this.visible = true
+      this.videoVisible = true
+      this.getCompetence()
+    },
+    signInPassword(meetingid) {
+      this.meetingid = meetingid
+      this.passwordVisible = true
       this.getCompetence()
     },
     onCancel() {
@@ -256,6 +276,45 @@ export default {
         })
       }
       this.load()
+    },
+    // 密码签到
+    signPassword() {
+      if (this.inputPassword) {
+        const employee = JSON.parse(localStorage.getItem("employee"))
+        let formData = new FormData()
+        formData.append("uuid", this.inputPassword);
+        formData.append("meetingid", this.meetingid)
+        formData.append("employeeid", employee.employeeid)
+        formData.append("location", this.location)
+        this.loading = true
+        console.log(formData);
+        this.request.post("/SignInByImage2", formData).then(res => {
+          if (res.code === 200) {
+            this.$message({
+              showClose: true,
+              type: 'success',
+              message: res.data,
+            })
+            this.loading = false
+            this.visible = false
+            this.load()
+          } else {
+            this.$message({
+              showClose: true,
+              type: 'error',
+              message: res.msg,
+            })
+            this.loading = false
+          }
+        })
+      }
+      else {
+        this.$message({
+          message: '请输入',
+          type: 'warning',
+          duration: 1000
+        });
+      }
     },
     //base64转成文件后上传
     onUpload() {
@@ -471,6 +530,7 @@ export default {
   .MeetingInput .el-button {
     margin-top: 10px;
   }
+
   .sgin .el-button {
     margin-top: 10px;
   }

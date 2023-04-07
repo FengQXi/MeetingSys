@@ -1,6 +1,7 @@
 package com.rookie.rookiemeeting.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
 import com.baidu.aip.face.AipFace;
 import com.rookie.rookiemeeting.common.lang.Result;
@@ -17,6 +18,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,6 +36,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
+
+import static com.rookie.rookiemeeting.util.RedisContants.IMG2;
+import static com.rookie.rookiemeeting.util.RedisContants.IMG2_TTL;
 
 @RestController
 @Api(tags = "人脸识别控制类")
@@ -56,6 +61,31 @@ public class PhotoController {
     //百度人脸识别接口
     @Autowired
     private AipFace aipFace;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    @GetMapping("/getImage2")
+    public Result getImage2(){
+        String uuid = RandomUtil.randomNumbers(6);
+        stringRedisTemplate.opsForValue().set(IMG2,uuid,IMG2_TTL,TimeUnit.SECONDS);
+        return Result.succ(uuid);
+    }
+    @PostMapping("/SignInByImage2")
+    public Result SingInByImage2(@RequestParam Long employeeid,
+                                 @RequestParam Integer meetingid,
+                                 @RequestParam String location,
+                                 @RequestParam String uuid,HttpServletRequest httpServletRequest){
+        String s = stringRedisTemplate.opsForValue().get(IMG2);
+        assert s != null;
+        if (!s.equals(uuid)){
+            return Result.fail("签到失败，请重新签到");
+        }
+
+        meetingParticipantsService.singIn(employeeid, meetingid, location);
+        return Result.succ("恭喜您签到成功");
+    }
+
 
     /**
      * 人脸登录

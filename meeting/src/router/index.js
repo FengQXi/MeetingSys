@@ -90,7 +90,7 @@ export const setRoutes = () => {
 }
 setRoutes()
 
-const whiteList = ['/login', '/faceLogin'] // no redirect whitelist
+const whiteList = ['/login', '/faceLogin','/register'] // no redirect whitelist
 //路由守卫
 router.beforeEach((to, from, next) => {
     nProgress.start()
