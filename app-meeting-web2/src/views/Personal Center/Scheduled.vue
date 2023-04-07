@@ -33,8 +33,9 @@
                             class="el-icon-view"></i></el-button>
                     <el-button type="success" size="small" @click="addMeeting(scope.row.meetingid)">添加员工<i
                             class="el-icon-circle-plus-outline"></i></el-button>
-                    <el-button type="success" size="small" @click="getPassword(scope.row.meetingid)">显示密码<i
-                            class="el-icon-circle-plus-outline"></i></el-button>
+                    <el-button type="success" size="small" @click="getPassword(scope.row.meetingid)"
+                        v-if="nowDate <= scope.row.signinendtime && nowDate >= scope.row.signinstarttime">
+                        显示密码<i class="el-icon-circle-plus-outline"></i></el-button>
                     <el-button type="warning" size="small" @click="handleEdit(scope.row)">编辑<i class="el-icon-edit"></i>
                     </el-button>
                 </template>
@@ -52,8 +53,9 @@
                                 <div class="time">开始时间:&nbsp;{{ item.starttime }}</div>
                                 <el-button type="warning" icon="el-icon-edit" circle class="button"
                                     @click="handleEdit(item)"></el-button>
-                                <el-button type="success" icon="el-icon-circle-plus-outline" circle class="button"
-                                    @click="getPassword(item.meetingid)"></el-button>
+                                <el-button type="success" icon="el-icon-view" circle class="button"
+                                    @click="getPassword(item.meetingid)"
+                                    v-if="nowDate <= item.signinendtime && nowDate >= item.signinstarttime"></el-button>
                                 <el-button type="success" icon="el-icon-circle-plus-outline" circle class="button"
                                     @click="addMeeting(item.meetingid)"></el-button>
                                 <el-button type="primary" icon="el-icon-view" circle class="button"
@@ -201,11 +203,11 @@
         </el-dialog>
 
         <!--  密码签到  -->
-        <el-dialog title="密码签到" :visible.sync="passwordVisible" width="420px" top="250px" center>
+        <el-dialog title="密码签到" :visible.sync="passwordVisible" width="420px" top="250px" center class="showPassWord">
             <!-- <el-input placeholder="请输入内容" v-model="showPassword" clearable>
             </el-input> -->
-            <el-row :gutter="12">
-                <el-col :span="4" v-for="(item, index) in showPassword" :key="index">
+            <el-row :gutter="24">
+                <el-col :span="widthWithPassword" v-for="(item, index) in showPassword" :key="index">
                     <el-card shadow="always">
                         {{ item }}
                     </el-card>
@@ -282,7 +284,8 @@ export default {
             loadingData: false,
             count: 0,
             loading: false,
-            showPassword: ''
+            showPassword: '',
+            widthWithPassword: 4
         }
     },
     //进入页面刷新数据
@@ -296,8 +299,10 @@ export default {
     },
     computed: {
         dataShowMethod() {
-            if (document.documentElement.clientWidth <= 500)
+            if (document.documentElement.clientWidth <= 500) {
+                this.widthWithPassword = 4
                 return true
+            }
             else
                 return false
         },
@@ -594,6 +599,9 @@ export default {
     clear: both
 }
 
+.showPassWord .el-card__body {
+        padding: 20px 15px 20px 15px;
+    }
 /* 
     添加人员弹出框
     转移框
@@ -660,6 +668,16 @@ export default {
 
     .ScheduledInput .el-button {
         margin-top: 10px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .showPassWord .el-dialog{
+        width: 95% !important;
+    }
+
+    .showPassWord .el-card__body {
+        padding: 10px;
     }
 }
 </style>

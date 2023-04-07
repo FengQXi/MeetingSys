@@ -131,7 +131,7 @@
       </div>
     </el-dialog>
     <!--  密码签到  -->
-    <el-dialog title="密码签到" :visible.sync="passwordVisible" width="420px" top="50px" center>
+    <el-dialog title="密码签到" :visible.sync="passwordVisible" width="420px" top="50px" center class="inputPassWordVisible">
       <el-input placeholder="请输入内容" v-model="inputPassword" clearable>
       </el-input>
       <div slot="footer" class="dialog-footer">
@@ -533,6 +533,15 @@ export default {
 
   .sgin .el-button {
     margin-top: 10px;
+  }
+
+}
+</style>
+<style>
+@media screen and (max-width: 600px) {
+
+  .inputPassWordVisible .el-dialog {
+    width: 95% !important;
   }
 }
 </style>

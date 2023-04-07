@@ -29,7 +29,9 @@
                 </el-submenu>
             </div>
         </div> -->
-        <div v-for="item in normalMenus" :key="item.id">
+
+        <!-- 老版本的会议功能 -->
+        <!-- <div v-for="item in normalMenus" :key="item.id">
             <div v-if="item.path">
                 <el-menu-item :index="item.path">
                     <i :class="item.icon"></i>
@@ -51,7 +53,7 @@
                 </el-submenu>
             </div>
         </div>
-        <div v-if="adminMenus.length" style="height: 2px; width: calc(100% - 40px); background-color: rgb(151, 145, 145); margin: auto; border-radius: 2px;"></div>
+        <div v-if="adminMenus.length" style="height: 2px; width: calc(100% - 40px); background-color: rgb(151, 145, 145); margin: auto; border-radius: 2px;"></div> -->
         <div v-for="item in adminMenus" :key="item.id">
             <div v-if="item.path">
                 <el-menu-item :index="item.path">

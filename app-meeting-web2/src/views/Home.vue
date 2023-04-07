@@ -117,7 +117,7 @@ export default {
   } */
 
   .el-calendar-day {
-    height: 85px !important;
+    height: 95px !important;
   }
 }
 @media (max-width: 500px) {
