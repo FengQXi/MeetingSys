@@ -62,6 +62,8 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
+                const employee = JSON.parse(localStorage.getItem("employee"))
+                this.request.post('/loginOut' + employee.employeeid)
                 this.$store.commit("logout")
             })
         },
@@ -88,10 +90,11 @@ export default {
 
 <style scoped>
 @media screen and (max-width:600px) {
-    .timeShow{
+    .timeShow {
         display: none;
     }
-    #full-screen{
+
+    #full-screen {
         display: none;
     }
 }
