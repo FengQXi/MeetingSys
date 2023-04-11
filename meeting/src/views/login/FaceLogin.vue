@@ -9,11 +9,11 @@
 
         <el-button @click="setImage" type="primary" icon="el-icon-camera"
             style="margin-top: 10px;width: 150px;height: 40px">人脸登录</el-button>
-        <el-upload :http-request="uploadImg" :show-file-list="false" action="#">
+        <!-- <el-upload :http-request="uploadImg" :show-file-list="false" action="#">
             <el-button type="primary" style="margin-top: 10px;width: 150px;height: 40px">
                 <i class="el-icon-picture"></i>图片上传
             </el-button>
-        </el-upload>
+        </el-upload> -->
     </div>
 </template>
 
