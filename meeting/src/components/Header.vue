@@ -63,7 +63,11 @@ export default {
                 type: 'warning'
             }).then(() => {
                 const employee = JSON.parse(localStorage.getItem("employee"))
+<<<<<<< HEAD
                 this.request.post('/employee/loginOut', employee.employeeid).then(res => {
+=======
+                this.request.post('/employee/loginOut',employee.employeeid).then(res => {
+>>>>>>> 56fa55797f0da9b0b41f9ec794c5574de12f580e
                     this.$store.commit("logout")
                 })
             })
