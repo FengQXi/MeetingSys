@@ -63,8 +63,9 @@ export default {
                 type: 'warning'
             }).then(() => {
                 const employee = JSON.parse(localStorage.getItem("employee"))
-                this.request.post('/employee/loginOut',employee.employeeid)
-                this.$store.commit("logout")
+                this.request.post('/employee/loginOut',employee.employeeid).then(res => {
+                    this.$store.commit("logout")
+                })
             })
         },
         updatePass() {

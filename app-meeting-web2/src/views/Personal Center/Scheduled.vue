@@ -378,7 +378,13 @@ export default {
         getPassword(meetingid) {
             this.meetingid = meetingid
             this.passwordVisible = true
-            this.request.get("/getImage2").then(res => {
+            this.request({
+                method:"get",
+                url:"/getImage2",
+                params:{
+                    meetingId:meetingid
+                }
+            }).then(res => {
                 this.showPassword = res.data
             })
         },
