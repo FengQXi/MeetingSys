@@ -19,10 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -66,9 +63,9 @@ public class PhotoController {
     private StringRedisTemplate stringRedisTemplate;
 
     @GetMapping("/getImage2")
-    public Result getImage2(){
+    public Result getImage2(@RequestParam String meetingId){
         String uuid = RandomUtil.randomNumbers(6);
-        stringRedisTemplate.opsForValue().set(IMG2,uuid,IMG2_TTL,TimeUnit.SECONDS);
+        stringRedisTemplate.opsForValue().set(IMG2+meetingId,uuid,IMG2_TTL);
         return Result.succ(uuid);
     }
     @PostMapping("/SignInByImage2")

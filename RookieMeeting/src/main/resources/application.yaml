@@ -42,7 +42,7 @@ spring:
       max-request-size: 200MB
 # 端口号
 server:
-  port: 8888
+  port: 8000
 
 
 # 人脸照片上传路径

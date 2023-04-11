@@ -51,6 +51,20 @@ public class EmployeeController {
     IMenuService menuService;
 
 
+    @PostMapping("/loginOut")
+    public Result loginOut(@RequestBody Integer id) {
+        if(id==null){
+            return Result.fail("退出失败");
+        }
+        String o = (String)redisTemplate.opsForValue().get(id);
+        redisTemplate.delete(o);
+        redisTemplate.delete(id+"");
+        return Result.succ("退出成功");
+    }
+
+
+
+
     /**
      * 登录接口
      *

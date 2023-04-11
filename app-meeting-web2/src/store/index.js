@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import router,{resetRouter} from "@/router";
+import router, { resetRouter } from "@/router";
 
 Vue.use(Vuex)
 
@@ -11,10 +11,10 @@ export default new Vuex.Store({
   getters: {
   },
   mutations: {
-    setPath(state){
+    setPath(state) {
       this.state.currentPathName = localStorage.getItem("currentPathName")
     },
-    logout(){
+    logout() {
       //清空缓存
       localStorage.removeItem("employee")
       localStorage.removeItem("menus")

@@ -62,7 +62,10 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                this.$store.commit("logout")
+                const employee = JSON.parse(localStorage.getItem("employee"))
+                this.request.post('/employee/loginOut', employee.employeeid).then(res => {
+                    this.$store.commit("logout")
+                })
             })
         },
         updatePass() {
