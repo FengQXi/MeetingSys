@@ -26,7 +26,7 @@
         <el-button @click="onTake" icon="el-icon-camera" size="small">拍照上传</el-button>
         <el-upload class="avatar-uploader" action="" :http-request="uploadImg" :show-file-list="false"
           :on-success="handleAvatarSuccess" :before-upload="beforeUpload" ref="upload">
-          <img v-if="form.faceimg" :src="'http://localhost:8888/download?name=' + form.faceimg" class="avatar" alt="图片">
+          <img v-if="form.faceimg" :src="'http://localhost:8000/download?name=' + form.faceimg" class="avatar" alt="图片">
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
       </el-form-item>

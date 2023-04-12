@@ -129,7 +129,7 @@ export default {
 .filterImg {
     width: 100%;
     height: 100%;
-    background-image: url('../../../public/backimg.jpg');
+    background-image: url('../../../public/loginBackground.jpg');
     background-size: 100% 100%;
 }
 
@@ -218,6 +218,11 @@ a {
 @media screen and (max-width: 500px) {
     .login_box {
         left: 50%;
+    }
+    .filterImg {
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
     }
 }
 </style>

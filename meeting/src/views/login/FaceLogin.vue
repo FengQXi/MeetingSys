@@ -64,7 +64,7 @@ export default {
             formData.append("file", this.base64ToFile(this.imgSrc, "png"));
             formData.append("flag", "videoImg"); // 额外参数
             //使用axios对应的后台上传图片接口
-            this.request.post("http://localhost:8888/faceLogin", formData).then(res => {
+            this.request.post("/faceLogin", formData).then(res => {
                 if (res.code === 200) {
                     localStorage.setItem("employee", JSON.stringify(res.data))  //把用户信息存在浏览器
                     localStorage.setItem("menus", JSON.stringify(res.data.menus))
