@@ -123,7 +123,7 @@
                 <el-button v-if="open === false" @click="
                     resetCanvas();
                 videoorcanvasShow = true" icon="el-icon-refresh" size="small">重置</el-button>
-                <el-button @click="onUpload" :loading="loading" type="primary" icon="el-icon-circle-check"
+                <el-button @click="onUpload" :loading="submitLoading" type="primary" icon="el-icon-circle-check"
                     size="small">提交</el-button>
                 <!-- <el-upload action :http-request="uploadImg" :show-file-list="false"
                     style="display: inline-block;margin-left: 7px">
@@ -174,7 +174,7 @@ export default {
             loadingData: false,
             location: localStorage.getItem("location"),
             count: 0,
-            loading: false,
+            submitLoading: false,
             sginWidth: '1050px',
             videoorcanvasShow: true,
             inputPassword: ''
@@ -297,7 +297,12 @@ export default {
                             type: 'success',
                             message: res.data,
                         })
-                        this.loading = false
+                        this.tableData.forEach(item => {
+                            if(item.meetingid = this.meetingid) {
+                                item.status = 1
+                            }
+                        })
+                        this.submitLoading = false
                         this.visible = false
                         this.load()
                     } else {
@@ -306,7 +311,7 @@ export default {
                             type: 'error',
                             message: res.msg,
                         })
-                        this.loading = false
+                        this.submitLoading = false
                     }
                 })
             }
@@ -338,7 +343,12 @@ export default {
                             type: 'success',
                             message: res.data,
                         })
-                        this.loading = false
+                        this.tableData.forEach(item => {
+                            if(item.meetingid = this.meetingid) {
+                                item.status = 1
+                            }
+                        })
+                        this.submitLoading = false
                         this.visible = false
                         this.load()
                     } else {
@@ -347,7 +357,7 @@ export default {
                             type: 'error',
                             message: res.msg,
                         })
-                        this.loading = false
+                        this.submitLoading = false
                     }
                 })
             }
