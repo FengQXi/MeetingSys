@@ -99,7 +99,7 @@ export default {
                     }, error => {
                         this.$message({
                             showClose: true,
-                            message: res.message || "ERROR",
+                            message: error.message || "ERROR",
                             type: 'error',
                             duration: 1000
                         });

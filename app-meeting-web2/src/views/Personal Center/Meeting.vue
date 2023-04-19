@@ -326,6 +326,15 @@ export default {
         //base64转成文件后上传
         onUpload() {
             if (this.imgSrc) {
+                let signedMeetings = localStorage.getItem("signedMeetings")
+                if(signedMeetings != null && signedMeetings.indexOf(this.meetingid) != -1) {
+                    this.$message({
+                        type: "warning",
+                        message: "当前会议一台设备只能签到一次",
+                    })
+                    return
+                }
+
                 const employee = JSON.parse(localStorage.getItem("employee"))
                 let formData = new FormData()
                 formData.append("file", this.base64ToFile(this.imgSrc, "png"));
@@ -348,6 +357,13 @@ export default {
                                 item.status = 1
                             }
                         })
+
+                        if(signedMeetings == null) {
+                            signedMeetings = new Array(this.meetingid)
+                        }
+                        else signedMeetings.push(this.meetingid)
+                        localStorage.setItem("signedMeetings", signedMeetings)
+
                         this.submitLoading = false
                         this.visible = false
                         this.load()
