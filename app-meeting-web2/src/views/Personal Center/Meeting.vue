@@ -105,14 +105,14 @@
             <!-- PC端 -->
             <div class="box" v-if="!dataShowMethod">
                 <video id="videoCamera" class="canvas" :width="videoWidth" :height="videoHeight" autoPlay></video>
-                <canvas id="canvasCamera" class="canvas" :width="videoWidth" :height="videoHeight"></canvas>
+                <canvas id="canvasCamera" class="canvas" :width="videoWidth" :height="videoHeight" v-show="false"></canvas>
             </div>
             <!-- 移动端 -->
             <div class="box" v-if="dataShowMethod">
                 <video id="videoCamera" class="canvas" :width="videoWidth" :height="videoHeight" autoPlay
-                    v-show="videoorcanvasShow"></video>
+                    v-show="videoorcanvasShow || !videoorcanvasShow"></video>
                 <canvas id="canvasCamera" class="canvas" :width="videoWidth" :height="videoHeight"
-                    v-show="!videoorcanvasShow"></canvas>
+                    v-show="!videoorcanvasShow && videoorcanvasShow"></canvas>
             </div>
             <div slot="footer">
                 <el-button v-if="open === false" @click="
@@ -124,7 +124,7 @@
                     resetCanvas();
                 videoorcanvasShow = true" icon="el-icon-refresh" size="small">重置</el-button>
                 <el-button @click="onUpload" :loading="submitLoading" type="primary" icon="el-icon-circle-check"
-                    size="small">提交</el-button>
+                    size="small" v-show="false">提交</el-button>
                 <!-- <el-upload action :http-request="uploadImg" :show-file-list="false"
                     style="display: inline-block;margin-left: 7px">
                     <el-button type="primary" style="margin-left: 5px"><i class="el-icon-picture"></i>图片上传</el-button>
@@ -472,6 +472,7 @@ export default {
             this.thisContext.drawImage(this.thisVideo, 0, 0, this.videoWidth, this.videoHeight);
             // 获取图片base64链接
             this.imgSrc = this.thisCancas.toDataURL('image/png');
+            this.onUpload()
         },
         // base64 转为 file
         base64ToFile(urlData, fileName) {
