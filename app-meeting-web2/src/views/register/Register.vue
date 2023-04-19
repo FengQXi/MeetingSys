@@ -133,7 +133,7 @@ export default {
 .registerBox {
   width: 100%;
   height: 100%;
-  background-image: url('../../../public/backimg.jpg');
+  background-image: url('../../../public/loginBackground.jpg');
   background-size: 100% 100%;
 }
 

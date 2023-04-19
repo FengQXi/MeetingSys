@@ -44,25 +44,33 @@
         <!-- 移动端 -->
         <div class="infinite-list-wrapper" style="overflow:auto" v-if="dataShowMethod">
             <ul class="list" v-infinite-scroll="load" infinite-scroll-disabled="disabled">
-                <li v-for="item in tableData" class="list-item" style="margin-bottom: 20px;">
+                <li v-for="item in tableData" class="list-item" style="margin-bottom: 20px;"
+                    @click="clickMeetingCard(item)">
                     <el-card :body-style="{ padding: '7px' }" shadow="never">
-                        <div style="padding: 14px;">
+                        <div slot="header" class="clearfix">
                             <span>{{ item.meetingname }}</span>
-                            <div class="bottom clearfix">
+                            <i class="el-icon-close" style="float: right; padding: 3px 0"
+                                @click.stop="cancelmeeting(item.meetingid)"></i>
+                        </div>
+                        <div class="clearfix" style="padding: 4px 12px;">
+                            <div style="float: left;">
                                 <div class="time" style="margin-bottom: 6px;">会议地点:&nbsp;{{ item.roomname }}</div>
                                 <div class="time">开始时间:&nbsp;{{ item.starttime }}</div>
-                                <el-button type="warning" icon="el-icon-edit" circle class="button"
-                                    @click="handleEdit(item)"></el-button>
-                                <el-button type="success" icon="el-icon-view" circle class="button"
-                                    @click="getPassword(item.meetingid)"
-                                    v-if="nowDate <= item.signinendtime && nowDate >= item.signinstarttime"></el-button>
-                                <el-button type="success" icon="el-icon-circle-plus-outline" circle class="button"
-                                    @click="addMeeting(item.meetingid)"></el-button>
-                                <el-button type="primary" icon="el-icon-view" circle class="button"
-                                    @click="participants(item.meetingid)"></el-button>
-                                <el-button type="danger" icon="el-icon-circle-close" circle class="button"
-                                    @click="cancelmeeting(item.meetingid)"></el-button>
                             </div>
+
+                            <div style="float: right">
+                                <el-button type="success" icon="el-icon-view" circle class="button"
+                                    @click.stop="getPassword(item.meetingid)"
+                                    v-if="nowDate <= item.signinendtime && nowDate >= item.signinstarttime"></el-button>
+                            </div>
+                            <!-- <el-button type="warning" icon="el-icon-edit" circle class="button"
+                                    @click.stop="handleEdit(item)"></el-button> -->
+                            <!-- <el-button type="success" icon="el-icon-circle-plus-outline" circle class="button"
+                                @click="addMeeting(item.meetingid)"></el-button> -->
+                            <!-- <el-button type="primary" icon="el-icon-view" circle class="button"
+                                @click="participants(item.meetingid)"></el-button> -->
+                            <!-- <el-button type="danger" icon="el-icon-circle-close" circle class="button"
+                                @click.stop="cancelmeeting(item.meetingid)"></el-button> -->
                         </div>
                     </el-card>
                 </li>
@@ -76,7 +84,7 @@
         </div>
 
         <!--  查看考勤信息的弹窗  -->
-        <el-dialog title="查看考勤信息" :visible.sync="dialogVisible" width="90%" center>
+        <!-- <el-dialog title="查看考勤信息" :visible.sync="dialogVisible" width="90%" center>
             <div style="margin-bottom: 10px">
                 参加会议总人数：{{ totalNumber }} 人<el-divider direction="vertical"></el-divider>
                 已签到人数：{{ totalNumber - signedNumber }} 人<el-divider direction="vertical"></el-divider>
@@ -118,7 +126,7 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </el-dialog>
+        </el-dialog> -->
 
         <!--  分页  -->
         <div style="padding-top: 15px" v-if="!dataShowMethod">
@@ -145,8 +153,7 @@
         </el-dialog>
 
         <!--  添加参会员工弹窗  -->
-        <el-dialog title="选择参会员工" :visible.sync="dialogMeetingVisible" width="673px" class="el-dialog-add" center>
-            <!-- <div style="margin-bottom: 10px;text-align: center"><el-tag type="danger">注意：不要提交重复的参会人员</el-tag></div> -->
+        <!-- <el-dialog title="选择参会员工" :visible.sync="dialogMeetingVisible" width="673px" class="el-dialog-add" center>
             <el-transfer :titles="['选择参会人员', '已选参会人员']" :button-texts="['移除', '添加']" filterable filter-placeholder="请输入员工姓名"
                 v-model="checked" :data="transferData" @change="getObject">
             </el-transfer>
@@ -154,10 +161,10 @@
                 <el-button @click="dialogMeetingVisible = false">取 消</el-button>
                 <el-button type="primary" @click="addEmployee">确 定</el-button>
             </div>
-        </el-dialog>
+        </el-dialog> -->
 
-        <!--  编辑弹窗  -->
-        <el-dialog title="编辑会议信息" :visible.sync="dialogEditVisible" width="420px" top="50px" center
+        <!--  点击卡片之后的弹窗  -->
+        <el-dialog v-if="dialogDetailVisible" title="会议详情" :visible.sync="dialogDetailVisible" width="420px" top="50px" center
             class="el-dialog-editMeet">
             <el-form label-width="120px" :model="formEdit" ref="formEdit" :rules="editFormRules">
                 <el-form-item label="会议名称" prop="meetingname">
@@ -180,7 +187,10 @@
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item label="预计参加人数" prop="numberofparticipants">
-                    <el-input v-model="formEdit.numberofparticipants" autocomplete="off" disabled></el-input>
+                    <el-tag type="success">{{ formEdit.numberofparticipants }}</el-tag>
+                    <!-- <el-input v-model="formEdit.numberofparticipants" autocomplete="off" disabled></el-input> -->
+                    <el-button style="float: right" type="primary" round icon="el-icon-circle-plus-outline"
+                        @click.stop="addMeeting(meetingid)"></el-button>
                 </el-form-item>
                 <el-form-item label="预计开始时间" prop="starttime">
                     <el-date-picker v-model="formEdit.starttime" type="datetime" placeholder="选择预定日期时间"
@@ -196,10 +206,63 @@
                     <el-input type="textarea" v-model="formEdit.description" autocomplete="off"></el-input>
                 </el-form-item>
             </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogEditVisible = false">取 消</el-button>
-                <el-button type="primary" @click="save">确 定</el-button>
+
+            <el-button type="primary" @click="save" style="margin-left: 110px">保存修改</el-button>
+
+            <pie-chart id="myChart" ref="myChart" :meetingid="meetingid"></pie-chart>
+
+            <div style="margin-bottom: 10px">
+                参加会议总人数：{{ totalNumber }} 人<el-divider direction="vertical"></el-divider>
+                已签到人数：{{ totalNumber - signedNumber }} 人<el-divider direction="vertical"></el-divider>
+                未签到人数：{{ signedNumber }} 人 <el-divider direction="vertical"></el-divider>
+                <el-button type="primary" @click="exp(meetingid)" class="downloadFile">导出考勤信息<i class="el-icon-download">
+                    </i></el-button>
             </div>
+            <el-table :data="employeeData" border stripe :header-cell-class-name="headerBg">
+                <el-table-column prop="employeename" label="员工姓名" width="80px"></el-table-column>
+                <el-table-column prop="phone" label="手机号" min-width="100px"></el-table-column>
+                <el-table-column prop="email" label="邮箱" min-width="150px"></el-table-column>
+                <el-table-column prop="departmentname" label="所属部门" width="80px"></el-table-column>
+                <el-table-column prop="checkintime" label="签到时间" min-width="150px"></el-table-column>
+                <el-table-column prop="location" label="签到地点" min-width="120px"></el-table-column>
+                <el-table-column prop="status" label="签到状态" width="80px">
+                    <template slot-scope="scope">
+                        <el-tag size="small" v-if="scope.row.status === 0 && nowDate >= scope.row.signinendtime"
+                            type="danger">未签到
+                        </el-tag>
+                        <el-tag size="small" v-if="scope.row.status === 0 && nowDate <= scope.row.signinstarttime"
+                            type="info">
+                            签到未开始
+                        </el-tag>
+                        <el-tag size="small"
+                            v-if="scope.row.status === 0 && nowDate <= scope.row.signinendtime && nowDate >= scope.row.signinstarttime">
+                            正在签到
+                        </el-tag>
+                        <el-tag size="small" v-else-if="scope.row.status === 1" type="success">已签到</el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" min-width="170">
+                    <template slot-scope="scope">
+                        <el-button type="success" size="small" @click="signature(scope.row.meetingid, scope.row.employeeid)"
+                            v-if="scope.row.status === 0 && nowDate >= scope.row.signinendtime">补签<i
+                                class="el-icon-check"></i></el-button>
+                        <el-button type="danger" size="small"
+                            @click="DeleteEmp(scope.row.employeeid, scope.row.meetingid)">删除<i
+                                class="el-icon-delete"></i></el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+
+            <el-dialog title="选择参会员工" :visible.sync="dialogMeetingVisible" width="673px" class="el-dialog-add" center
+                append-to-body>
+                <el-transfer :titles="['选择参会人员', '已选参会人员']" :button-texts="['移除', '添加']" filterable
+                    filter-placeholder="请输入员工姓名" v-model="checked" :data="transferData" @change="getObject">
+                </el-transfer>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="dialogMeetingVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="addEmployee">确 定</el-button>
+                </div>
+            </el-dialog>
         </el-dialog>
 
         <!--  密码签到  -->
@@ -219,9 +282,14 @@
 
 <script>
 import dayjs from 'dayjs' //时间格式转换插件
+import PieChart from "./PieChart.vue"
+import Login from '../login/Login.vue'
 
 export default {
     name: "Scheduled",
+    components: {
+        PieChart
+    },
     data() {
         return {
             nowDate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
@@ -232,7 +300,7 @@ export default {
             dialogFormVisible: false,
             dialogRevokeVisible: false,
             dialogMeetingVisible: false,
-            dialogEditVisible: false,
+            dialogDetailVisible: false,
             passwordVisible: false,
             meetingid: '',
             formRevoke: {},
@@ -285,7 +353,7 @@ export default {
             count: 0,
             loading: false,
             showPassword: '',
-            widthWithPassword: 4
+            widthWithPassword: 4,
         }
     },
     //进入页面刷新数据
@@ -314,6 +382,25 @@ export default {
         }
     },
     methods: {
+        clickMeetingCard(row) {
+            console.log(row);
+
+            this.formEdit = JSON.parse(JSON.stringify(row))  //深拷贝
+
+            this.meetingid = row.meetingid
+            this.request.post("/bookings/participants/" + this.meetingid).then(res => {
+                // console.log(res)
+                this.employeeData = res.data
+            })
+            this.request.post("/bookings/queryNum/" + this.meetingid).then(res => {
+                this.totalNumber = res.data
+            })
+            this.request.post("/bookings/signed/" + this.meetingid).then(res => {
+                this.signedNumber = res.data
+            })
+
+            this.dialogDetailVisible = true
+        },
         //请求分页查询数据
         load() {
             this.loadingData = true
@@ -382,7 +469,7 @@ export default {
                 method: "get",
                 url: "/getImage2",
                 params: {
-                    meetingId: meetingid,
+                    meetingId: meetingid
                 }
             }).then(res => {
                 this.showPassword = res.data
@@ -516,7 +603,7 @@ export default {
         },
         //编辑
         handleEdit(row) {
-            console.log(row)
+            // console.log(row)
             this.formEdit = JSON.parse(JSON.stringify(row))  //深拷贝
             this.dialogEditVisible = true
         },
@@ -556,7 +643,7 @@ export default {
                 link.click();
             });
         }
-    }
+    },
 } 
 </script>
 
@@ -606,8 +693,9 @@ export default {
 }
 
 .showPassWord .el-card__body {
-        padding: 20px 15px 20px 15px;
-    }
+    padding: 20px 15px 20px 15px;
+}
+
 /* 
     添加人员弹出框
     转移框
@@ -678,8 +766,8 @@ export default {
 }
 
 @media screen and (max-width: 600px) {
-    .showPassWord .el-dialog{
-        width: 95% !important;
+    .showPassWord .el-dialog {
+        width: 100% !important;
     }
 
     .showPassWord .el-card__body {
